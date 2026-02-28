@@ -15,6 +15,7 @@ import TanStackQueryProvider from '../integrations/tanstack-query/root-provider'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
+import katexCss from 'katex/dist/katex.min.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -42,6 +43,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       {
         rel: 'stylesheet',
         href: appCss,
+      },
+      {
+        rel: 'stylesheet',
+        href: katexCss,
       },
     ],
   }),

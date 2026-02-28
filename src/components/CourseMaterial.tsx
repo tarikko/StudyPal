@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import type { Chapter, Section } from '../data/course-content'
+import { Streamdown } from 'streamdown'
+import type { Chapter } from '../data/course-content'
+import { remarkPlugins, rehypePlugins } from '../lib/markdown-config'
 
 interface CourseMaterialProps {
   chapters: Chapter[]
@@ -79,8 +81,26 @@ export default function CourseMaterial({
               {currentSection.title}
             </h2>
             <div className="prose max-w-none text-[var(--sea-ink)]">
-              {renderContent(currentSection, setActiveSection)}
+              <Streamdown mode="static" remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{currentSection.content}</Streamdown>
             </div>
+            {currentSection.references.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--kicker)]">
+                  See also:
+                </span>
+                {currentSection.references.map((ref) => (
+                  <button
+                    key={ref.targetSectionId}
+                    type="button"
+                    onClick={() => setActiveSection(ref.targetSectionId)}
+                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--line)] bg-[rgba(79,184,178,0.06)] px-2 py-0.5 text-xs font-semibold text-[var(--lagoon-deep)] transition hover:bg-[rgba(79,184,178,0.14)]"
+                    title="Jump to referenced section"
+                  >
+                    🔗 {ref.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <p className="text-[var(--sea-ink-soft)]">
@@ -88,66 +108,6 @@ export default function CourseMaterial({
           </p>
         )}
       </div>
-    </div>
-  )
-}
-
-function renderContent(
-  section: Section,
-  onNavigate: (sectionId: string) => void,
-) {
-  let content = section.content
-
-  // Build a map of reference labels to their target section IDs
-  const refMap = new Map<string, string>()
-  for (const ref of section.references) {
-    refMap.set(ref.label, ref.targetSectionId)
-  }
-
-  // Split content by reference labels and create interactive hyperlinks
-  const parts: Array<{ type: 'text' | 'link'; text: string; targetId?: string }> = []
-  let remaining = content
-
-  for (const ref of section.references) {
-    const idx = remaining.toLowerCase().indexOf(ref.label.toLowerCase())
-    if (idx !== -1) {
-      if (idx > 0) {
-        parts.push({ type: 'text', text: remaining.slice(0, idx) })
-      }
-      parts.push({
-        type: 'link',
-        text: remaining.slice(idx, idx + ref.label.length),
-        targetId: ref.targetSectionId,
-      })
-      remaining = remaining.slice(idx + ref.label.length)
-    }
-  }
-  if (remaining) {
-    parts.push({ type: 'text', text: remaining })
-  }
-
-  if (parts.length === 0) {
-    parts.push({ type: 'text', text: content })
-  }
-
-  return (
-    <div className="space-y-3 whitespace-pre-wrap leading-relaxed">
-      {parts.map((part, i) => {
-        if (part.type === 'link' && part.targetId) {
-          return (
-            <button
-              key={i}
-              type="button"
-              onClick={() => onNavigate(part.targetId!)}
-              className="inline cursor-pointer border-b-2 border-[var(--lagoon)] bg-transparent p-0 font-semibold text-[var(--lagoon-deep)] transition hover:bg-[rgba(79,184,178,0.1)]"
-              title="Jump to referenced section"
-            >
-              {part.text}
-            </button>
-          )
-        }
-        return <span key={i}>{part.text}</span>
-      })}
     </div>
   )
 }

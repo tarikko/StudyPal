@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
+import { Streamdown } from 'streamdown'
 import type { Exercise } from '../data/course-content'
 import { courseContent } from '../data/course-content'
+import { remarkPlugins, rehypePlugins } from '../lib/markdown-config'
 
 interface ExercisesSectionProps {
   exercises: Exercise[]
@@ -98,9 +100,9 @@ function ExerciseCard({
 
       {/* Problem statement */}
       <div className="mb-4 rounded-xl border border-[var(--line)] bg-[rgba(79,184,178,0.04)] p-4">
-        <p className="m-0 text-sm leading-relaxed text-[var(--sea-ink)]">
-          {exercise.problem}
-        </p>
+        <div className="prose prose-sm max-w-none text-[var(--sea-ink)]">
+          <Streamdown mode="static" remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{exercise.problem}</Streamdown>
+        </div>
       </div>
 
       {/* Step-by-step reveal */}
@@ -109,7 +111,9 @@ function ExerciseCard({
           <div key={i}>
             {i < revealedSteps ? (
               <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
-                {step}
+                <div className="prose prose-sm max-w-none prose-p:m-0">
+                  <Streamdown mode="static" remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{step}</Streamdown>
+                </div>
               </div>
             ) : i === revealedSteps ? (
               <button
