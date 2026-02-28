@@ -4,6 +4,7 @@ import { getUnsolvedExercises } from '#/lib/timetable-engine'
 import { CourseCard } from '#/components/CourseCard'
 import { CurrentSession } from '#/components/CurrentSession'
 import { MagicButton } from '#/components/MagicButton'
+import { TomorrowExercises } from '#/components/TomorrowExercises'
 
 export const Route = createFileRoute('/')({ component: Dashboard })
 
@@ -48,6 +49,9 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Tomorrow's Exercises */}
+      <TomorrowExercises />
 
       {/* Magic Button */}
       <MagicButton />

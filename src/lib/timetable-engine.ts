@@ -100,3 +100,26 @@ export function getNextSessionDay(entry: TimetableEntry, now: Date = new Date())
   if (entry.day === (today + 1) % 7) return 'Tomorrow'
   return getDayName(entry.day)
 }
+
+export function getTomorrowSessions(now: Date = new Date()): TimetableEntry[] {
+  const tomorrow = (now.getDay() + 1) % 7
+  return timetable
+    .filter((entry) => entry.day === tomorrow)
+    .sort((a, b) => toMinutes(a.startHour, a.startMinute) - toMinutes(b.startHour, b.startMinute))
+}
+
+export function getTomorrowExercises(now: Date = new Date()): { courseId: string; courseName: string; exercises: typeof courseContents[string]['exercises'] }[] {
+  const sessions = getTomorrowSessions(now)
+  const courseIds = [...new Set(sessions.map((s) => s.courseId))]
+
+  return courseIds
+    .map((courseId) => {
+      const content = courseContents[courseId]
+      const session = sessions.find((s) => s.courseId === courseId)
+      if (!content || !session) return null
+      const unsolved = content.exercises.filter((e) => !e.solved)
+      if (unsolved.length === 0) return null
+      return { courseId, courseName: session.courseName, exercises: unsolved }
+    })
+    .filter(Boolean) as { courseId: string; courseName: string; exercises: typeof courseContents[string]['exercises'] }[]
+}
