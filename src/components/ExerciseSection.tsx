@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Streamdown } from 'streamdown'
 import type { Exercise, CourseContent } from '#/data/courses'
-import { remarkPlugins, rehypePlugins } from '#/lib/markdown-config'
 
 interface ExerciseSectionProps {
   content: CourseContent
@@ -73,9 +71,7 @@ function ExerciseCard({
 
       {/* Problem */}
       <div className="mb-4 rounded-lg bg-[var(--sand)]/50 p-4">
-        <div className="prose prose-sm max-w-none text-[var(--sea-ink)]">
-          <Streamdown mode="static" remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{exercise.problem}</Streamdown>
-        </div>
+        <p className="text-sm font-medium text-[var(--sea-ink)]">{exercise.problem}</p>
       </div>
 
       {/* Step-by-step reveal */}
@@ -90,9 +86,7 @@ function ExerciseCard({
             }`}
           >
             {idx < revealedSteps ? (
-              <div className="prose prose-sm max-w-none text-[var(--sea-ink)] prose-p:m-0">
-                <Streamdown mode="static" remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{step}</Streamdown>
-              </div>
+              <p className="text-sm text-[var(--sea-ink)]">{step}</p>
             ) : (
               <p className="text-sm text-gray-400 italic select-none">
                 Step {idx + 1} hidden — click &quot;Reveal Next Step&quot;
