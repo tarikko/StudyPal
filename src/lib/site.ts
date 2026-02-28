@@ -1,4 +1,4 @@
-export const SITE_TITLE = 'TanStack Start'
+export const SITE_TITLE = 'StudyPal'
 export const SITE_DESCRIPTION =
-  'A tropical, breathable app starter with full-document SSR, server functions, streaming, and type-safe routing.'
+  'Your complete Learning OS. Upload notes, generate structured courses, and master exercises with AI-powered step-by-step hints.'
 export const SITE_URL = 'https://example.com'
