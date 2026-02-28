@@ -7,15 +7,18 @@ import type { PluggableList } from 'unified'
 /**
  * Custom remark plugins that enable single-dollar inline math ($...$)
  * in addition to the default double-dollar block math ($$...$$).
+ *
+ * `defaultRemarkPlugins` from streamdown is a Record<string, Pluggable>,
+ * so we iterate its entries and override the 'math' key.
  */
-export const remarkPlugins: PluggableList = Object.entries(defaultRemarkPlugins).map(
-  ([key, plugin]) => {
-    if (key === 'math') {
-      return [remarkMath, { singleDollarTextMath: true }]
-    }
-    return plugin
-  },
-)
+export const remarkPlugins: PluggableList = Object.entries(
+  defaultRemarkPlugins as Record<string, unknown>,
+).map(([key, plugin]) => {
+  if (key === 'math') {
+    return [remarkMath, { singleDollarTextMath: true }]
+  }
+  return plugin
+}) as PluggableList
 
 /**
  * Rehype plugins for rendering trusted course content.
@@ -24,5 +27,5 @@ export const remarkPlugins: PluggableList = Object.entries(defaultRemarkPlugins)
  */
 export const rehypePlugins: PluggableList = [
   rehypeRaw,
-  [rehypeKatex, { errorColor: 'var(--color-muted-foreground)' }],
+  [rehypeKatex, { errorColor: '#ef4444' }],
 ]
