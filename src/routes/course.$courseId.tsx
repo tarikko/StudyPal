@@ -52,7 +52,7 @@ function CoursePage() {
     void navigate({
       to: '/course/$courseId',
       params: { courseId },
-      search: { tab: newTab },
+      search: newTab === 'material' ? { tab: newTab, chapter, section } : { tab: newTab },
       replace: true,
     })
   }

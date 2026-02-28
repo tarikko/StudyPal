@@ -4,7 +4,6 @@ import type { Exercise, CourseContent } from '#/data/courses'
 
 interface ExerciseSectionProps {
   content: CourseContent
-  onNavigateToMaterial?: (chapterId: string, sectionId: string) => void
 }
 
 function DifficultyBadge({ difficulty }: { difficulty: Exercise['difficulty'] }) {

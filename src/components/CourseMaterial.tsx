@@ -11,7 +11,6 @@ interface CourseMaterialProps {
 function renderContentWithLinks(
   text: string,
   content: CourseContent,
-  _courseId: string,
   onNavigate: (chapterId: string, sectionId: string) => void,
 ) {
   // Build a map of all section titles to their IDs for semantic hyperlinks
@@ -194,7 +193,7 @@ export function CourseMaterial({ content, initialChapterId, initialSectionId }: 
             </div>
             <h2 className="mb-6 text-2xl font-bold text-[var(--sea-ink)]">{activeSection.title}</h2>
             <div className="rounded-xl border border-[var(--line)] bg-white/50 p-6">
-              {renderContentWithLinks(activeSection.content, content, content.courseId, handleSelectSection)}
+              {renderContentWithLinks(activeSection.content, content, handleSelectSection)}
             </div>
 
             {/* Prev / Next navigation */}
