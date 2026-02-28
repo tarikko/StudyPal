@@ -113,6 +113,8 @@ export function getDayName(day: number): string {
 
 /**
  * Determines the current "magic" route — where the user should be right now.
+ * Priority: (1) active lecture session → (2) course with most unsolved exercises →
+ * (3) upcoming session prep → (4) dashboard fallback.
  */
 export function getMagicRoute(now: Date = new Date()): {
   path: string

@@ -83,13 +83,13 @@ function ExerciseCard({
           <div className="flex flex-wrap gap-1.5">
             {prerequisites.map((section) => (
               <Link
-                key={section!.id}
+                key={section?.id}
                 to="/course/$courseId"
                 params={{ courseId }}
-                search={{ tab: 'material', section: section!.id }}
+                search={{ tab: 'material', section: section?.id }}
                 className="rounded-lg border border-[var(--line)] bg-[rgba(79,184,178,0.06)] px-2 py-0.5 text-xs text-[var(--lagoon-deep)] no-underline transition hover:bg-[rgba(79,184,178,0.14)]"
               >
-                📖 {section!.title}
+                📖 {section?.title}
               </Link>
             ))}
           </div>

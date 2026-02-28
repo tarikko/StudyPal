@@ -7,6 +7,8 @@ export default function MagicButton() {
   const [tooltip, setTooltip] = useState<string | null>(null)
   const [isAnimating, setIsAnimating] = useState(false)
 
+  const TOOLTIP_DISPLAY_MS = 1500
+
   const handleClick = () => {
     setIsAnimating(true)
     const magic = getMagicRoute()
@@ -23,7 +25,7 @@ export default function MagicButton() {
           params: { courseId: magic.params.courseId },
         })
       }
-    }, 1500)
+    }, TOOLTIP_DISPLAY_MS)
   }
 
   return (
