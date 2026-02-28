@@ -20,12 +20,14 @@ export function CourseMaterial({ content, initialChapterId, initialSectionId }: 
   const [activeSectionId, setActiveSectionId] = useState(
     initialSectionId ?? firstSection?.id ?? '',
   )
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const contentRef = useRef<HTMLDivElement>(null)
 
   const handleSelectSection = useCallback((chapterId: string, sectionId: string) => {
     setActiveChapterId(chapterId)
     setActiveSectionId(sectionId)
+    setSidebarOpen(false)
     // Scroll the content area to top
     contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
@@ -48,9 +50,9 @@ export function CourseMaterial({ content, initialChapterId, initialSectionId }: 
 
   return (
     <div className="flex gap-6">
-      {/* Sidebar */}
+      {/* Desktop sidebar */}
       <div className="hidden w-64 shrink-0 lg:block">
-        <div className="sticky top-4 rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] p-4">
+        <div className="sticky top-20 rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] p-4">
           <p className="mb-3 text-xs font-bold tracking-wider text-[var(--sea-ink-soft)] uppercase">
             Chapters
           </p>
@@ -63,26 +65,54 @@ export function CourseMaterial({ content, initialChapterId, initialSectionId }: 
         </div>
       </div>
 
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile sidebar drawer */}
+      <div
+        className={`fixed top-0 left-0 z-[101] flex h-full w-72 flex-col bg-[var(--surface-strong)] shadow-2xl transition-transform duration-300 ease-out lg:hidden ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-[var(--line)] px-5 py-4">
+          <span className="text-sm font-bold text-[var(--sea-ink)]">Chapters</span>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--sea-ink-soft)] hover:text-[var(--sea-ink)]"
+            aria-label="Close sidebar"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">
+          <ChapterSidebar
+            chapters={content.chapters}
+            activeChapterId={activeChapterId}
+            activeSectionId={activeSectionId}
+            onSelectSection={handleSelectSection}
+          />
+        </div>
+      </div>
+
       {/* Content area */}
       <div className="min-w-0 flex-1" ref={contentRef}>
-        {/* Mobile chapter selector */}
+        {/* Mobile chapter button */}
         <div className="mb-4 lg:hidden">
-          <select
-            value={`${activeChapterId}:${activeSectionId}`}
-            onChange={(e) => {
-              const [chId, secId] = e.target.value.split(':')
-              handleSelectSection(chId, secId)
-            }}
-            className="w-full rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2 text-sm"
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="flex w-full items-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2.5 text-sm font-medium text-[var(--sea-ink)]"
           >
-            {content.chapters.map((ch) =>
-              ch.sections.map((sec) => (
-                <option key={`${ch.id}:${sec.id}`} value={`${ch.id}:${sec.id}`}>
-                  {ch.title} — {sec.title}
-                </option>
-              )),
-            )}
-          </select>
+            <span>📖</span>
+            <span className="flex-1 truncate text-left">
+              {activeChapter?.title} — {activeSection?.title}
+            </span>
+            <span className="text-[var(--sea-ink-soft)]">☰</span>
+          </button>
         </div>
 
         {activeSection ? (
@@ -92,15 +122,15 @@ export function CourseMaterial({ content, initialChapterId, initialSectionId }: 
                 {activeChapter?.title}
               </p>
             </div>
-            <h2 className="mb-6 text-2xl font-bold text-[var(--sea-ink)]">{activeSection.title}</h2>
-            <div className="rounded-xl border border-[var(--line)] bg-white/50 p-6">
+            <h2 className="mb-6 text-xl font-bold text-[var(--sea-ink)] sm:text-2xl">{activeSection.title}</h2>
+            <div className="rounded-xl border border-[var(--line)] bg-white/50 p-4 sm:p-6">
               <div className="prose prose-sm max-w-none prose-headings:text-[var(--sea-ink)] prose-p:text-[var(--sea-ink)] prose-li:text-[var(--sea-ink)] prose-strong:text-[var(--sea-ink)]">
                 <Streamdown mode="static" remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{activeSection.content}</Streamdown>
               </div>
             </div>
 
             {/* Prev / Next navigation */}
-            <div className="mt-6 flex justify-between">
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-between">
               {prevSection ? (
                 <button
                   onClick={() => handleSelectSection(prevSection.chapterId, prevSection.sectionId)}
