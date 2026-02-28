@@ -24,15 +24,9 @@ export default function Header() {
             to="/"
             className="nav-link"
             activeProps={{ className: 'nav-link is-active' }}
+            activeOptions={{ exact: true }}
           >
             Dashboard
-          </Link>
-          <Link
-            to="/about"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            About
           </Link>
         </div>
       </nav>
