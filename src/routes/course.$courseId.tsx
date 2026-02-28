@@ -60,7 +60,7 @@ function CoursePage() {
   return (
     <main className="page-wrap px-4 pb-8 pt-14">
       {/* Course header */}
-      <div className="rise-in mb-6 flex items-center gap-4">
+      <div className="rise-in mb-6 flex items-center gap-3 sm:gap-4">
         <Link
           to="/"
           className="rounded-lg border border-[var(--line)] bg-white/50 p-2 text-[var(--sea-ink-soft)] no-underline transition-colors hover:bg-white/80"
@@ -68,15 +68,15 @@ function CoursePage() {
           ←
         </Link>
         <div
-          className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${course.color} text-2xl text-white shadow-md`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br sm:h-12 sm:w-12 ${course.color} text-xl text-white shadow-md sm:text-2xl`}
         >
           {course.icon}
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-xs font-semibold tracking-wider text-[var(--kicker)] uppercase">
             {course.code}
           </p>
-          <h1 className="text-2xl font-bold text-[var(--sea-ink)]">{course.name}</h1>
+          <h1 className="truncate text-lg font-bold text-[var(--sea-ink)] sm:text-2xl">{course.name}</h1>
         </div>
       </div>
 
@@ -84,17 +84,17 @@ function CoursePage() {
       <div className="rise-in mb-6 flex gap-1 rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] p-1" style={{ animationDelay: '80ms' }}>
         <button
           onClick={() => setTab('material')}
-          className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
+          className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition-all sm:px-4 sm:py-2.5 sm:text-sm ${
             activeTab === 'material'
               ? 'bg-white text-[var(--sea-ink)] shadow-sm'
               : 'text-[var(--sea-ink-soft)] hover:text-[var(--sea-ink)]'
           }`}
         >
-          📖 Course Material
+          📖 Material
         </button>
         <button
           onClick={() => setTab('exercises')}
-          className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
+          className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition-all sm:px-4 sm:py-2.5 sm:text-sm ${
             activeTab === 'exercises'
               ? 'bg-white text-[var(--sea-ink)] shadow-sm'
               : 'text-[var(--sea-ink-soft)] hover:text-[var(--sea-ink)]'
@@ -102,7 +102,7 @@ function CoursePage() {
         >
           ✏️ Exercises
           {content.exercises.filter((e) => !e.solved).length > 0 && (
-            <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1.5 text-xs font-bold text-amber-700">
+            <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1.5 text-xs font-bold text-amber-700">
               {content.exercises.filter((e) => !e.solved).length}
             </span>
           )}

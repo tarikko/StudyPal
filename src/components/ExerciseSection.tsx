@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { Exercise, CourseContent } from '#/data/courses'
+import { ExerciseVerify } from './ExerciseVerify'
 
 interface ExerciseSectionProps {
   content: CourseContent
@@ -27,6 +28,7 @@ function ExerciseCard({
   courseId: string
 }) {
   const [revealedSteps, setRevealedSteps] = useState(0)
+  const [showVerify, setShowVerify] = useState(false)
   const totalSteps = exercise.steps.length
 
   const revealNext = () => {
@@ -97,7 +99,7 @@ function ExerciseCard({
       </div>
 
       {/* Actions */}
-      <div className="mt-4 flex items-center gap-3">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
         {revealedSteps < totalSteps ? (
           <button
             onClick={revealNext}
@@ -118,7 +120,20 @@ function ExerciseCard({
             Hide All
           </button>
         )}
+        {!showVerify && (
+          <button
+            onClick={() => setShowVerify(true)}
+            className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-100"
+          >
+            🔍 Verify Solution
+          </button>
+        )}
       </div>
+
+      {/* Exercise Verification */}
+      {showVerify && (
+        <ExerciseVerify exercise={exercise} onClose={() => setShowVerify(false)} />
+      )}
     </div>
   )
 }
