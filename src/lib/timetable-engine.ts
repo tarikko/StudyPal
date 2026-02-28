@@ -108,7 +108,13 @@ export function getTomorrowSessions(now: Date = new Date()): TimetableEntry[] {
     .sort((a, b) => toMinutes(a.startHour, a.startMinute) - toMinutes(b.startHour, b.startMinute))
 }
 
-export function getTomorrowExercises(now: Date = new Date()): { courseId: string; courseName: string; exercises: typeof courseContents[string]['exercises'] }[] {
+export interface TomorrowExerciseGroup {
+  courseId: string
+  courseName: string
+  exercises: typeof courseContents[string]['exercises']
+}
+
+export function getTomorrowExercises(now: Date = new Date()): TomorrowExerciseGroup[] {
   const sessions = getTomorrowSessions(now)
   const courseIds = [...new Set(sessions.map((s) => s.courseId))]
 
@@ -121,5 +127,5 @@ export function getTomorrowExercises(now: Date = new Date()): { courseId: string
       if (unsolved.length === 0) return null
       return { courseId, courseName: session.courseName, exercises: unsolved }
     })
-    .filter(Boolean) as { courseId: string; courseName: string; exercises: typeof courseContents[string]['exercises'] }[]
+    .filter(Boolean) as TomorrowExerciseGroup[]
 }

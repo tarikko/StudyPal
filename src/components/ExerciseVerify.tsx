@@ -46,8 +46,9 @@ export function ExerciseVerify({ exercise, onClose }: ExerciseVerifyProps) {
     if (mode === 'text' && solution.trim()) {
       await sendMessage(`My solution:\n\n${solution}`)
     } else if (mode === 'image' && imageBase64 && imagePreview) {
-      // Send image as multimodal content
-      const mimeType = imagePreview.split(';')[0].split(':')[1] || 'image/jpeg'
+      // Extract MIME type from data URL (format: data:image/jpeg;base64,...)
+      const dataUrlPrefix = imagePreview.split(';')[0]
+      const mimeType = dataUrlPrefix?.includes(':') ? dataUrlPrefix.split(':')[1] : 'image/jpeg'
       await sendMessage([
         { type: 'text', text: 'Here is my handwritten solution (see attached image):' },
         { type: 'image', image: imageBase64, mimeType },
@@ -159,12 +160,6 @@ export function ExerciseVerify({ exercise, onClose }: ExerciseVerifyProps) {
               'Verify with Mistral AI'
             )}
           </button>
-
-          {!process.env.MISTRAL_API_KEY && (
-            <p className="mt-2 text-center text-xs text-amber-600">
-              ⚠️ Set MISTRAL_API_KEY environment variable to enable AI verification
-            </p>
-          )}
         </>
       ) : (
         <div>

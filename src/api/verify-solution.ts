@@ -5,7 +5,10 @@ import { createServerFn } from '@tanstack/react-start'
 import type { ModelMessage } from '@tanstack/ai'
 
 const getMistralAdapter = () => {
-  const apiKey = process.env.MISTRAL_API_KEY ?? ''
+  const apiKey = process.env.MISTRAL_API_KEY
+  if (!apiKey) {
+    throw new Error('MISTRAL_API_KEY environment variable is not set. Please configure it to enable AI verification.')
+  }
   return openaiText('mistral-large-latest', {
     apiKey,
     baseURL: 'https://api.mistral.ai/v1',
