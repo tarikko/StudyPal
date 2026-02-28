@@ -1,41 +1,50 @@
 import { Link } from '@tanstack/react-router'
-import type { Course } from '../data/timetable'
-import { getUnsolvedExercisesForCourse } from '../lib/timetable-utils'
+import type { Course } from '#/data/timetable'
+import { courseContents } from '#/data/courses'
 
 interface CourseCardProps {
   course: Course
-  index: number
 }
 
-export default function CourseCard({ course, index }: CourseCardProps) {
-  const unsolved = getUnsolvedExercisesForCourse(course.id)
+export function CourseCard({ course }: CourseCardProps) {
+  const content = courseContents[course.id]
+  const totalExercises = content?.exercises.length ?? 0
+  const unsolvedCount = content?.exercises.filter((e) => !e.solved).length ?? 0
+  const chapterCount = content?.chapters.length ?? 0
 
   return (
     <Link
       to="/course/$courseId"
       params={{ courseId: course.id }}
-      className="island-shell rise-in group relative flex flex-col rounded-2xl p-5 no-underline"
-      style={{ animationDelay: `${index * 80 + 100}ms` }}
+      className="group block rounded-2xl border border-[var(--line)] bg-[linear-gradient(165deg,var(--surface-strong),var(--surface))] p-6 shadow-[0_1px_0_var(--inset-glint)_inset,0_18px_34px_rgba(30,90,72,0.1),0_4px_14px_rgba(23,58,64,0.06)] transition-all duration-200 hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--lagoon-deep)_35%,var(--line))] no-underline"
     >
-      <div
-        className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl text-2xl text-white"
-        style={{ backgroundColor: course.color }}
-      >
-        {course.icon}
+      <div className="mb-4 flex items-center gap-3">
+        <div
+          className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${course.color} text-2xl text-white shadow-md`}
+        >
+          {course.icon}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold tracking-wider text-[var(--kicker)] uppercase">
+            {course.code}
+          </p>
+          <h3 className="truncate text-lg font-bold text-[var(--sea-ink)]">{course.name}</h3>
+        </div>
       </div>
-      <p className="island-kicker mb-1">{course.code}</p>
-      <h3 className="mb-1 text-base font-bold text-[var(--sea-ink)]">
-        {course.name}
-      </h3>
-      <p className="mb-3 text-xs text-[var(--sea-ink-soft)]">
-        {course.professor}
-      </p>
-      {unsolved.length > 0 && (
-        <span className="mt-auto inline-flex w-fit items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-          {unsolved.length} unsolved
+      <p className="mb-4 text-sm leading-relaxed text-[var(--sea-ink-soft)]">{course.description}</p>
+      <div className="flex items-center gap-4 text-xs text-[var(--sea-ink-soft)]">
+        <span className="flex items-center gap-1">
+          <span className="text-sm">📚</span> {chapterCount} chapters
         </span>
-      )}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl border-2 border-transparent transition group-hover:border-[var(--lagoon)]" />
+        <span className="flex items-center gap-1">
+          <span className="text-sm">✏️</span> {totalExercises} exercises
+        </span>
+        {unsolvedCount > 0 && (
+          <span className="ml-auto rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+            {unsolvedCount} unsolved
+          </span>
+        )}
+      </div>
     </Link>
   )
 }

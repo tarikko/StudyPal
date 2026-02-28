@@ -1,111 +1,128 @@
-import { useState } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Streamdown } from 'streamdown'
-import type { Chapter } from '../data/course-content'
-import { remarkPlugins, rehypePlugins } from '../lib/markdown-config'
+import type { CourseContent } from '#/data/courses'
+import { ChapterSidebar } from './ChapterSidebar'
+import { remarkPlugins, rehypePlugins } from '#/lib/markdown-config'
 
 interface CourseMaterialProps {
-  chapters: Chapter[]
-  courseId: string
-  activeSectionId?: string
+  content: CourseContent
+  initialChapterId?: string
+  initialSectionId?: string
 }
 
-export default function CourseMaterial({
-  chapters,
-  courseId,
-  activeSectionId,
-}: CourseMaterialProps) {
-  const [activeSection, setActiveSection] = useState<string>(
-    activeSectionId ?? chapters[0]?.sections[0]?.id ?? '',
+export function CourseMaterial({ content, initialChapterId, initialSectionId }: CourseMaterialProps) {
+  const firstChapter = content.chapters[0]
+  const firstSection = firstChapter?.sections[0]
+
+  const [activeChapterId, setActiveChapterId] = useState(
+    initialChapterId ?? firstChapter?.id ?? '',
+  )
+  const [activeSectionId, setActiveSectionId] = useState(
+    initialSectionId ?? firstSection?.id ?? '',
   )
 
-  const currentSection = chapters
-    .flatMap((ch) => ch.sections)
-    .find((s) => s.id === activeSection)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  const handleSelectSection = useCallback((chapterId: string, sectionId: string) => {
+    setActiveChapterId(chapterId)
+    setActiveSectionId(sectionId)
+    // Scroll the content area to top
+    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  const activeChapter = content.chapters.find((c) => c.id === activeChapterId)
+  const activeSection = activeChapter?.sections.find((s) => s.id === activeSectionId)
+
+  // Find prev/next section for navigation
+  const allSections: { chapterId: string; sectionId: string; title: string }[] = []
+  for (const ch of content.chapters) {
+    for (const sec of ch.sections) {
+      allSections.push({ chapterId: ch.id, sectionId: sec.id, title: sec.title })
+    }
+  }
+  const currentIdx = allSections.findIndex(
+    (s) => s.chapterId === activeChapterId && s.sectionId === activeSectionId,
+  )
+  const prevSection = currentIdx > 0 ? allSections[currentIdx - 1] : null
+  const nextSection = currentIdx < allSections.length - 1 ? allSections[currentIdx + 1] : null
 
   return (
     <div className="flex gap-6">
-      {/* Sidebar Navigation */}
-      <aside className="hidden w-56 shrink-0 md:block">
-        <nav className="sticky top-24 space-y-4">
-          {chapters.map((chapter) => (
-            <div key={chapter.id}>
-              <h4 className="mb-1.5 text-xs font-bold uppercase tracking-wider text-[var(--kicker)]">
-                {chapter.title}
-              </h4>
-              <ul className="space-y-0.5">
-                {chapter.sections.map((section) => (
-                  <li key={section.id}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveSection(section.id)}
-                      className={`w-full rounded-lg px-2.5 py-1.5 text-left text-xs transition ${
-                        activeSection === section.id
-                          ? 'bg-[rgba(79,184,178,0.14)] font-semibold text-[var(--lagoon-deep)]'
-                          : 'text-[var(--sea-ink-soft)] hover:bg-[rgba(79,184,178,0.06)] hover:text-[var(--sea-ink)]'
-                      }`}
-                    >
-                      {section.title}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </nav>
-      </aside>
-
-      {/* Mobile chapter dropdown */}
-      <div className="mb-4 md:hidden">
-        <select
-          value={activeSection}
-          onChange={(e) => setActiveSection(e.target.value)}
-          className="w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm"
-        >
-          {chapters.map((chapter) => (
-            <optgroup key={chapter.id} label={chapter.title}>
-              {chapter.sections.map((section) => (
-                <option key={section.id} value={section.id}>
-                  {section.title}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+      {/* Sidebar */}
+      <div className="hidden w-64 shrink-0 lg:block">
+        <div className="sticky top-4 rounded-xl border border-[var(--line)] bg-[var(--surface-strong)] p-4">
+          <p className="mb-3 text-xs font-bold tracking-wider text-[var(--sea-ink-soft)] uppercase">
+            Chapters
+          </p>
+          <ChapterSidebar
+            chapters={content.chapters}
+            activeChapterId={activeChapterId}
+            activeSectionId={activeSectionId}
+            onSelectSection={handleSelectSection}
+          />
+        </div>
       </div>
 
-      {/* Main content */}
-      <div className="min-w-0 flex-1">
-        {currentSection ? (
-          <div>
-            <h2 className="mb-4 text-xl font-bold text-[var(--sea-ink)]">
-              {currentSection.title}
-            </h2>
-            <div className="prose max-w-none text-[var(--sea-ink)]">
-              <Streamdown mode="static" remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{currentSection.content}</Streamdown>
-            </div>
-            {currentSection.references.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--kicker)]">
-                  See also:
-                </span>
-                {currentSection.references.map((ref) => (
-                  <button
-                    key={ref.targetSectionId}
-                    type="button"
-                    onClick={() => setActiveSection(ref.targetSectionId)}
-                    className="inline-flex items-center gap-1 rounded-lg border border-[var(--line)] bg-[rgba(79,184,178,0.06)] px-2 py-0.5 text-xs font-semibold text-[var(--lagoon-deep)] transition hover:bg-[rgba(79,184,178,0.14)]"
-                    title="Jump to referenced section"
-                  >
-                    🔗 {ref.label}
-                  </button>
-                ))}
-              </div>
+      {/* Content area */}
+      <div className="min-w-0 flex-1" ref={contentRef}>
+        {/* Mobile chapter selector */}
+        <div className="mb-4 lg:hidden">
+          <select
+            value={`${activeChapterId}:${activeSectionId}`}
+            onChange={(e) => {
+              const [chId, secId] = e.target.value.split(':')
+              handleSelectSection(chId, secId)
+            }}
+            className="w-full rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] px-3 py-2 text-sm"
+          >
+            {content.chapters.map((ch) =>
+              ch.sections.map((sec) => (
+                <option key={`${ch.id}:${sec.id}`} value={`${ch.id}:${sec.id}`}>
+                  {ch.title} — {sec.title}
+                </option>
+              )),
             )}
+          </select>
+        </div>
+
+        {activeSection ? (
+          <div>
+            <div className="mb-2">
+              <p className="text-xs font-semibold tracking-wider text-[var(--kicker)] uppercase">
+                {activeChapter?.title}
+              </p>
+            </div>
+            <h2 className="mb-6 text-2xl font-bold text-[var(--sea-ink)]">{activeSection.title}</h2>
+            <div className="prose max-w-none rounded-xl border border-[var(--line)] bg-white/50 p-6 text-[var(--sea-ink)]">
+              <Streamdown mode="static" remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>{activeSection.content}</Streamdown>
+            </div>
+
+            {/* Prev / Next navigation */}
+            <div className="mt-6 flex justify-between">
+              {prevSection ? (
+                <button
+                  onClick={() => handleSelectSection(prevSection.chapterId, prevSection.sectionId)}
+                  className="rounded-lg border border-[var(--line)] bg-white/50 px-4 py-2 text-sm text-[var(--sea-ink-soft)] transition-colors hover:bg-white/80"
+                >
+                  ← {prevSection.title}
+                </button>
+              ) : (
+                <div />
+              )}
+              {nextSection ? (
+                <button
+                  onClick={() => handleSelectSection(nextSection.chapterId, nextSection.sectionId)}
+                  className="rounded-lg border border-[var(--line)] bg-white/50 px-4 py-2 text-sm text-[var(--sea-ink-soft)] transition-colors hover:bg-white/80"
+                >
+                  {nextSection.title} →
+                </button>
+              ) : (
+                <div />
+              )}
+            </div>
           </div>
         ) : (
-          <p className="text-[var(--sea-ink-soft)]">
-            Select a section to view its content.
-          </p>
+          <p className="text-[var(--sea-ink-soft)]">Select a section from the sidebar.</p>
         )}
       </div>
     </div>
