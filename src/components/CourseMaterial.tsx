@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef } from 'react'
+import { Streamdown } from 'streamdown'
 import type { CourseContent } from '#/data/courses'
 import { ChapterSidebar } from './ChapterSidebar'
+import { remarkPlugins, rehypePlugins } from '#/lib/markdown-config'
 
 interface CourseMaterialProps {
   content: CourseContent
