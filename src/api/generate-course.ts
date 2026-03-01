@@ -20,8 +20,8 @@ export const startGeneration = createServerFn({ method: "POST" })
 
 		// Fire-and-forget: do not await so the response returns immediately
 		void runGenerationPipeline(data.files, courseId, jobId)
-			.then((content) => {
-				saveGeneratedCourse({ meta: data.courseMeta, content });
+			.then(async (content) => {
+				await saveGeneratedCourse({ meta: data.courseMeta, content });
 			})
 			.catch((err: Error) => {
 				updateJob(jobId, {

@@ -9,6 +9,6 @@ export const getCourseData = createServerFn({ method: "POST" })
 		// Check hardcoded first
 		if (courseContents[courseId]) return courseContents[courseId];
 		// Fall back to generated
-		const bundle = getGeneratedCourse(courseId);
+		const bundle = await getGeneratedCourse(courseId);
 		return bundle?.content ?? null;
 	});

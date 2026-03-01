@@ -1,52 +1,33 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import type { CourseContent } from '#/data/courses'
-import type { Course } from '#/data/timetable'
+import { kv } from "@vercel/kv";
+import type { CourseContent } from "#/data/courses";
+import type { Course } from "#/data/timetable";
 
-const STORE_DIR = path.join(process.cwd(), 'generated-courses')
-
-function ensureDir() {
-  if (!fs.existsSync(STORE_DIR)) {
-    fs.mkdirSync(STORE_DIR, { recursive: true })
-  }
-}
+const KEY_PREFIX = "course:";
 
 export interface GeneratedCourseBundle {
-  meta: Course
-  content: CourseContent
+	meta: Course;
+	content: CourseContent;
 }
 
-export function saveGeneratedCourse(bundle: GeneratedCourseBundle) {
-  ensureDir()
-  const filePath = path.join(STORE_DIR, `${bundle.content.courseId}.json`)
-  fs.writeFileSync(filePath, JSON.stringify(bundle, null, 2), 'utf-8')
+export async function saveGeneratedCourse(
+	bundle: GeneratedCourseBundle
+): Promise<void> {
+	await kv.set(`${KEY_PREFIX}${bundle.content.courseId}`, bundle);
 }
 
-export function getGeneratedCourse(courseId: string): GeneratedCourseBundle | null {
-  ensureDir()
-  const filePath = path.join(STORE_DIR, `${courseId}.json`)
-  if (!fs.existsSync(filePath)) return null
-  try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as GeneratedCourseBundle
-  } catch {
-    return null
-  }
+export async function getGeneratedCourse(
+	courseId: string
+): Promise<GeneratedCourseBundle | null> {
+	return await kv.get<GeneratedCourseBundle>(`${KEY_PREFIX}${courseId}`);
 }
 
-export function getAllGeneratedCourses(): GeneratedCourseBundle[] {
-  ensureDir()
-  try {
-    const files = fs.readdirSync(STORE_DIR).filter((f) => f.endsWith('.json'))
-    return files
-      .map((f) => {
-        try {
-          return JSON.parse(fs.readFileSync(path.join(STORE_DIR, f), 'utf-8')) as GeneratedCourseBundle
-        } catch {
-          return null
-        }
-      })
-      .filter(Boolean) as GeneratedCourseBundle[]
-  } catch {
-    return []
-  }
+export async function getAllGeneratedCourses(): Promise<
+	GeneratedCourseBundle[]
+> {
+	const keys = await kv.keys(`${KEY_PREFIX}*`);
+	if (keys.length === 0) return [];
+	const results = await Promise.all(
+		keys.map((key) => kv.get<GeneratedCourseBundle>(key))
+	);
+	return results.filter((r): r is GeneratedCourseBundle => r !== null);
 }

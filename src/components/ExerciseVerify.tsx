@@ -41,6 +41,7 @@ export function ExerciseVerify({ exercise, onClose }: ExerciseVerifyProps) {
 	};
 
 	const handleSubmit = async () => {
+		console.log("mode-------");
 		if (mode === "text" && solution.trim()) {
 			await sendMessage(`My solution:\n\n${solution}`);
 		} else if (mode === "image" && imageBase64 && imagePreview) {
@@ -49,13 +50,19 @@ export function ExerciseVerify({ exercise, onClose }: ExerciseVerifyProps) {
 			const mimeType = dataUrlPrefix?.includes(":")
 				? dataUrlPrefix.split(":")[1]
 				: "image/jpeg";
-			await sendMessage([
-				{
-					type: "text",
-					text: "Here is my handwritten solution (see attached image):",
-				},
-				{ type: "image", image: imageBase64, mimeType },
-			]);
+			await sendMessage({
+				content: [
+					{
+						type: "text",
+						content:
+							"Here is my handwritten solution (see attached image):",
+					},
+					{
+						type: "image",
+						image: imageBase64,
+					},
+				],
+			});
 		}
 	};
 

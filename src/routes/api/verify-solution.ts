@@ -212,7 +212,7 @@ const generateMistralVerification = async (
 			model: "mistral-large-latest",
 			messages: mistralMessages,
 			temperature: 0.2,
-			max_tokens: 1024,
+			max_tokens: 4096,
 		}),
 	});
 
@@ -264,7 +264,9 @@ Exercise: "${body.exerciseTitle}"
 Problem: ${body.exerciseProblem}
 
 Instructions:
-- Use Katex syntax in ALL your answers
+- Use markdown: **bold** for key terms, bullet lists where helpful
+- Use LaTeX for maths: $inline$ and $$block$$ (use \\\\cmd for LaTeX commands inside $$)
+- If a question is not answered, mark it as incorrect
 - Carefully analyze the student's solution
 - Check for correctness, showing where errors occur if any
 - Provide a clear verdict: ✅ Correct, ⚠️ Partially Correct, or ❌ Incorrect
