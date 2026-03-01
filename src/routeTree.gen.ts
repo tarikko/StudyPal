@@ -9,9 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UploadRouteImport } from './routes/upload'
+import { Route as TimetableRouteImport } from './routes/timetable'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CourseCourseIdRouteImport } from './routes/course.$courseId'
+import { Route as ApiVerifySolutionRouteImport } from './routes/api/verify-solution'
 
+const UploadRoute = UploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TimetableRoute = TimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -22,35 +35,82 @@ const CourseCourseIdRoute = CourseCourseIdRouteImport.update({
   path: '/course/$courseId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVerifySolutionRoute = ApiVerifySolutionRouteImport.update({
+  id: '/api/verify-solution',
+  path: '/api/verify-solution',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/timetable': typeof TimetableRoute
+  '/upload': typeof UploadRoute
+  '/api/verify-solution': typeof ApiVerifySolutionRoute
   '/course/$courseId': typeof CourseCourseIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/timetable': typeof TimetableRoute
+  '/upload': typeof UploadRoute
+  '/api/verify-solution': typeof ApiVerifySolutionRoute
   '/course/$courseId': typeof CourseCourseIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/timetable': typeof TimetableRoute
+  '/upload': typeof UploadRoute
+  '/api/verify-solution': typeof ApiVerifySolutionRoute
   '/course/$courseId': typeof CourseCourseIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/course/$courseId'
+  fullPaths:
+    | '/'
+    | '/timetable'
+    | '/upload'
+    | '/api/verify-solution'
+    | '/course/$courseId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/course/$courseId'
-  id: '__root__' | '/' | '/course/$courseId'
+  to:
+    | '/'
+    | '/timetable'
+    | '/upload'
+    | '/api/verify-solution'
+    | '/course/$courseId'
+  id:
+    | '__root__'
+    | '/'
+    | '/timetable'
+    | '/upload'
+    | '/api/verify-solution'
+    | '/course/$courseId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TimetableRoute: typeof TimetableRoute
+  UploadRoute: typeof UploadRoute
+  ApiVerifySolutionRoute: typeof ApiVerifySolutionRoute
   CourseCourseIdRoute: typeof CourseCourseIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/upload': {
+      id: '/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof UploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/timetable': {
+      id: '/timetable'
+      path: '/timetable'
+      fullPath: '/timetable'
+      preLoaderRoute: typeof TimetableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,11 +125,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CourseCourseIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/verify-solution': {
+      id: '/api/verify-solution'
+      path: '/api/verify-solution'
+      fullPath: '/api/verify-solution'
+      preLoaderRoute: typeof ApiVerifySolutionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TimetableRoute: TimetableRoute,
+  UploadRoute: UploadRoute,
+  ApiVerifySolutionRoute: ApiVerifySolutionRoute,
   CourseCourseIdRoute: CourseCourseIdRoute,
 }
 export const routeTree = rootRouteImport

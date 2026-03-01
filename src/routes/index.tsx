@@ -1,16 +1,41 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { courses } from '#/data/timetable'
+import { courses as hardcodedCourses } from '#/data/timetable'
+import { getAllCoursesList } from '#/api/get-all-courses'
+import { getCourseData } from '#/api/get-course-data'
 import { getUnsolvedExercises } from '#/lib/timetable-engine'
 import { CourseCard } from '#/components/CourseCard'
 import { CurrentSession } from '#/components/CurrentSession'
 import { MagicButton } from '#/components/MagicButton'
 import { TomorrowExercises } from '#/components/TomorrowExercises'
+import type { CourseContent } from '#/data/courses'
 
-export const Route = createFileRoute('/')({ component: Dashboard })
+export const Route = createFileRoute('/')({
+  loader: async () => {
+    const allCourses = await getAllCoursesList()
+    // Fetch content for generated courses so CourseCard stats are accurate
+    const generatedIds = allCourses
+      .filter((c) => !hardcodedCourses.find((h) => h.id === c.id))
+      .map((c) => c.id)
+    const generatedContents = await Promise.all(
+      generatedIds.map((id) => getCourseData({ data: id })),
+    )
+    const generatedContentMap: Record<string, CourseContent> = {}
+    generatedIds.forEach((id, i) => {
+      if (generatedContents[i]) generatedContentMap[id] = generatedContents[i]!
+    })
+    return { allCourses, generatedContentMap }
+  },
+  component: Dashboard,
+})
 
 function Dashboard() {
+  const { allCourses, generatedContentMap } = Route.useLoaderData()
   const unsolved = getUnsolvedExercises()
   const totalUnsolved = unsolved.reduce((acc, c) => acc + c.count, 0)
+
+  const generatedCourses = allCourses.filter(
+    (c) => !hardcodedCourses.find((h) => h.id === c.id),
+  )
 
   return (
     <main className="page-wrap px-4 pb-8 pt-14">
@@ -43,10 +68,28 @@ function Dashboard() {
         <div>
           <h2 className="mb-4 text-xl font-bold text-[var(--sea-ink)]">📖 Your Courses</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {courses.map((course) => (
+            {hardcodedCourses.map((course) => (
               <CourseCard key={course.id} course={course} />
             ))}
           </div>
+
+          {/* Generated courses */}
+          {generatedCourses.length > 0 && (
+            <>
+              <h2 className="mb-4 mt-8 text-xl font-bold text-[var(--sea-ink)]">
+                ✨ Generated Courses
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {generatedCourses.map((course) => (
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    content={generatedContentMap[course.id]}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

@@ -1,13 +1,16 @@
 import { Link } from '@tanstack/react-router'
 import type { Course } from '#/data/timetable'
 import { courseContents } from '#/data/courses'
+import type { CourseContent } from '#/data/courses'
 
 interface CourseCardProps {
   course: Course
+  /** Pass pre-fetched content for generated courses (not in courseContents). */
+  content?: CourseContent | null
 }
 
-export function CourseCard({ course }: CourseCardProps) {
-  const content = courseContents[course.id]
+export function CourseCard({ course, content: contentProp }: CourseCardProps) {
+  const content = contentProp ?? courseContents[course.id]
   const totalExercises = content?.exercises.length ?? 0
   const unsolvedCount = content?.exercises.filter((e) => !e.solved).length ?? 0
   const chapterCount = content?.chapters.length ?? 0

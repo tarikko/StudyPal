@@ -1,0 +1,500 @@
+{
+  "meta": {
+    "id": "proba",
+    "name": "probability",
+    "code": "PROBA",
+    "icon": "📖",
+    "color": "from-pink-500 to-rose-600",
+    "description": "Generated from uploaded materials"
+  },
+  "content": {
+    "courseId": "proba",
+    "chapters": [
+      {
+        "id": "ch1",
+        "title": "Foundations of Probability Theory",
+        "sections": [
+          {
+            "id": "sec1-1",
+            "title": "Basic Concepts of Probability",
+            "content": "Probability theory provides a mathematical framework for quantifying uncertainty. At its core, it studies **random experiments**—processes whose outcomes cannot be predicted with certainty, even when repeated under identical conditions. Examples include tossing a coin, rolling a die, or measuring the lifetime of a light bulb.\n\n### Key Definitions\n\n- **Sample Space ($\\Omega$):** The set of all possible outcomes of a random experiment. For instance:\n  - Tossing a coin: $\\Omega = \\{H, T\\}$\n  - Rolling a die: $\\Omega = \\{1, 2, 3, 4, 5, 6\\}$\n\n- **Event ($E$):** A subset of the sample space. An event occurs if the outcome of the experiment is an element of $E$. For example:\n  - \"Rolling an even number\" corresponds to $E = \\{2, 4, 6\\}$.\n  - **Elementary event:** An event containing a single outcome (e.g., $\\{H\\}$).\n\n- **Probability Measure ($P$):** A function assigning a number $P(E) \\in [0, 1]$ to each event $E$, satisfying the following **axioms**:\n  1. **Non-negativity:** $P(E) \\geq 0$ for any event $E$.\n  2. **Normalization:** $P(\\Omega) = 1$.\n  3. **Additivity:** For mutually exclusive events $E_1, E_2, \\dots$,\n     $$ P\\left(\\bigcup_{i=1}^\\infty E_i\\right) = \\sum_{i=1}^\\infty P(E_i). $$\n\n### Interpretations of Probability\n\n1. **Classical Probability:** Assumes equally likely outcomes. For a finite sample space $\\Omega$ with $N$ outcomes, the probability of an event $E$ with $N_E$ outcomes is:\n   $$ P(E) = \\frac{N_E}{N}. $$\n   *Example:* The probability of rolling a 3 on a fair die is $1/6$.\n\n2. **Frequentist Probability:** Defines probability as the long-run relative frequency of an event in repeated trials. If an experiment is repeated $n$ times and event $E$ occurs $n_E$ times, then:\n   $$ P(E) \\approx \\frac{n_E}{n} \\quad \\text{as} \\quad n \\to \\infty. $$\n\n3. **Subjective Probability:** Represents a degree of belief about an event, often used in Bayesian statistics. For example, a meteorologist might assign a 70% probability of rain based on available data and expertise.\n\n### Fundamental Properties\n\nFrom the axioms, several key properties follow:\n- **Complement Rule:** $P(E^c) = 1 - P(E)$, where $E^c$ is the complement of $E$.\n- **Inclusion-Exclusion Principle:** For any two events $A$ and $B$,\n  $$ P(A \\cup B) = P(A) + P(B) - P(A \\cap B). $$\n- **Monotonicity:** If $A \\subseteq B$, then $P(A) \\leq P(B)$.\n\nThese concepts form the bedrock of probability theory, enabling the modeling of uncertainty in diverse fields such as science, engineering, and economics."
+          },
+          {
+            "id": "sec1-2",
+            "title": "Sample Spaces and Events",
+            "content": "In probability theory, the **sample space** is the foundational concept representing the set of all possible outcomes of a **random experiment**. Each individual outcome is called a **sample point**, and the sample space, denoted by $ S $, is the collection of these points. For example:\n\n- Tossing a fair coin once yields the sample space $ S = \\{H, T\\} $, where $ H $ and $ T $ represent heads and tails, respectively.\n- Rolling a six-sided die results in $ S = \\{1, 2, 3, 4, 5, 6\\} $.\n\nSample spaces may be classified based on their cardinality:\n- **Finite sample space**: Contains a finite number of sample points (e.g., outcomes of a die roll).\n- **Countably infinite sample space**: Contains as many points as the natural numbers (e.g., the number of coin tosses until the first head appears).\n- **Noncountably infinite sample space**: Contains uncountably many points, such as an interval on the real line (e.g., the exact lifetime of a light bulb, $ 0 \\leq t \\leq 4000 $).\n\nA **discrete sample space** is either finite or countably infinite, while a **nondiscrete sample space** is noncountably infinite.\n\nAn **event** is a subset of the sample space, $ A \\subseteq S $. If the outcome of an experiment is an element of $ A $, we say that event $ A $ has occurred. Events may consist of:\n- A single sample point (**simple or elementary event**).\n- Multiple sample points (**compound event**).\n\nFor instance, in tossing a coin twice, the sample space is $ S = \\{(H,H), (H,T), (T,H), (T,T)\\} $. The event \"exactly one head appears\" is the subset $ A = \\{(H,T), (T,H)\\} $.\n\nSpecial cases of events include:\n- The **sure event**, $ S $, which always occurs.\n- The **impossible event**, $ \\varnothing $, which never occurs.\n\nUsing set operations, we can construct new events from existing ones:\n- The **union** $ A \\cup B $ occurs if at least one of $ A $ or $ B $ occurs.\n- The **intersection** $ A \\cap B $ occurs if both $ A $ and $ B $ occur.\n- The **complement** $ A^c $ occurs if $ A $ does not occur.\n\nVisual representations, such as Venn diagrams or coordinate plots (e.g., Fig. 1-1), are often used to illustrate sample spaces and events, particularly in experiments with multiple stages or continuous outcomes."
+          },
+          {
+            "id": "sec1-3",
+            "title": "Probability Axioms and Theorems",
+            "content": "Probability theory is built upon a rigorous mathematical foundation defined by **probability axioms** and derived **theorems**. These principles formalize the notion of probability and enable precise reasoning about uncertainty.\n\n### Probability Axioms\nLet $S$ be a **sample space** representing all possible outcomes of a random experiment, and let $\\mathcal{F}$ be a **σ-algebra** of events (subsets of $S$). A **probability measure** $P$ is a function $P: \\mathcal{F} \\rightarrow [0,1]$ satisfying the following axioms:\n\n1. **Non-negativity**: For any event $A \\in \\mathcal{F}$,\n   $$ P(A) \\geq 0. $$\n\n2. **Normalization**: The probability of the entire sample space is 1,\n   $$ P(S) = 1. $$\n\n3. **Countable additivity**: For any countable sequence of mutually exclusive events $A_1, A_2, \\dots \\in \\mathcal{F}$,\n   $$ P\\left(\\bigcup_{i=1}^\\infty A_i\\right) = \\sum_{i=1}^\\infty P(A_i). $$\n\nThese axioms ensure that probability assignments are consistent and mathematically sound.\n\n### Key Theorems\nFrom the axioms, several fundamental theorems follow:\n\n- **Complement Rule**: For any event $A \\in \\mathcal{F}$,\n  $$ P(A^c) = 1 - P(A), $$\n  where $A^c$ is the complement of $A$.\n\n- **Monotonicity**: If $A \\subseteq B$, then\n  $$ P(A) \\leq P(B). $$\n\n- **Inclusion-Exclusion Principle**: For any two events $A$ and $B$,\n  $$ P(A \\cup B) = P(A) + P(B) - P(A \\cap B). $$\n  This generalizes to finite unions of events.\n\n- **Law of Total Probability**: If $\\{B_i\\}_{i=1}^\\infty$ is a partition of $S$ (i.e., mutually exclusive and exhaustive events), then for any event $A$,\n  $$ P(A) = \\sum_{i=1}^\\infty P(A \\mid B_i) P(B_i). $$\n\n- **Boole’s Inequality**: For any countable collection of events $\\{A_i\\}_{i=1}^\\infty$,\n  $$ P\\left(\\bigcup_{i=1}^\\infty A_i\\right) \\leq \\sum_{i=1}^\\infty P(A_i). $$\n\nThese theorems provide essential tools for computing probabilities in complex scenarios. Together, the axioms and theorems form the backbone of probability theory, enabling its application across science, engineering, and statistics."
+          },
+          {
+            "id": "sec1-4",
+            "title": "Conditional Probability and Independence",
+            "content": "In probability theory, **conditional probability** quantifies the likelihood of an event occurring given that another event has already occurred. Let $A$ and $B$ be events in a sample space $\\Omega$, with $P(B) > 0$. The conditional probability of $A$ given $B$ is defined as:\n\n$$\nP(A \\mid B) = \\frac{P(A \\cap B)}{P(B)}.\n$$\n\nHere, $P(A \\cap B)$ represents the joint probability of $A$ and $B$ occurring together, while $P(B)$ is the marginal probability of $B$. This definition adjusts the sample space to the event $B$, effectively treating $B$ as the new universal set.\n\nKey properties of conditional probability include:\n- **Normalization**: $P(B \\mid B) = 1$.\n- **Multiplication Rule**: For any two events $A$ and $B$,\n  $$\n  P(A \\cap B) = P(A \\mid B) \\cdot P(B) = P(B \\mid A) \\cdot P(A).\n  $$\n- **Law of Total Probability**: If $\\{B_1, B_2, \\dots, B_n\\}$ is a partition of $\\Omega$, then for any event $A$,\n  $$\n  P(A) = \\sum_{i=1}^n P(A \\mid B_i) \\cdot P(B_i).\n  $$\n\n**Independence** is a fundamental concept closely related to conditional probability. Two events $A$ and $B$ are **independent** if the occurrence of one does not affect the probability of the other. Formally, $A$ and $B$ are independent if and only if:\n\n$$\nP(A \\cap B) = P(A) \\cdot P(B).\n$$\n\nEquivalently, independence can be expressed using conditional probability:\n- $P(A \\mid B) = P(A)$, provided $P(B) > 0$.\n- $P(B \\mid A) = P(B)$, provided $P(A) > 0$.\n\nFor multiple events, mutual independence requires that the joint probability of any subset of events factors into the product of their individual probabilities. For example, three events $A$, $B$, and $C$ are mutually independent if:\n$$\nP(A \\cap B \\cap C) = P(A) \\cdot P(B) \\cdot P(C),\n$$\nand all pairwise independence conditions hold.\n\nUnderstanding conditional probability and independence is essential for modeling real-world scenarios where events are interdependent, such as in Bayesian inference, reliability analysis, and machine learning."
+          }
+        ]
+      },
+      {
+        "id": "ch2",
+        "title": "Random Variables and Probability Distributions",
+        "sections": [
+          {
+            "id": "sec2-1",
+            "title": "Discrete Random Variables",
+            "content": "A **discrete random variable** is a function that assigns a numerical value to each outcome of a random experiment, where the set of possible values is **finite** or **countably infinite**. For example, consider the experiment of tossing a fair coin three times. One possible random variable $X$ could represent the number of heads observed, taking values in $\\{0, 1, 2, 3\\}$. Another random variable might represent the square of the number of heads, taking values in $\\{0, 1, 4, 9\\}$.\n\n### Probability Mass Function (PMF)\nThe behavior of a discrete random variable is fully described by its **probability mass function (PMF)**, denoted $f(x) = P(X = x)$. The PMF satisfies two key properties:\n- **Non-negativity**: $f(x) \\geq 0$ for all $x$.\n- **Normalization**: $\\sum_{x} f(x) = 1$, where the sum is taken over all possible values of $X$.\n\nFor instance, if $X$ represents the number of heads in two tosses of a fair coin, its PMF is:\n$$\nf(0) = P(X = 0) = \\frac{1}{4}, \\quad f(1) = P(X = 1) = \\frac{1}{2}, \\quad f(2) = P(X = 2) = \\frac{1}{4}.\n$$\n\n### Cumulative Distribution Function (CDF)\nThe **cumulative distribution function (CDF)** of a discrete random variable $X$ is defined as:\n$$\nF(x) = P(X \\leq x) = \\sum_{k \\leq x} f(k).\n$$\nThe CDF is a **right-continuous**, non-decreasing step function that jumps at each value $x$ where $f(x) > 0$. For the coin-toss example above, the CDF is:\n$$\nF(x) =\n\\begin{cases}\n0 & \\text{if } x < 0, \\\\\n\\frac{1}{4} & \\text{if } 0 \\leq x < 1, \\\\\n\\frac{3}{4} & \\text{if } 1 \\leq x < 2, \\\\\n1 & \\text{if } x \\geq 2.\n\\end{cases}\n$$\n\n### Key Observations\n- The PMF can be derived from the CDF using:\n  $$\n  f(x) = F(x) - \\lim_{u \\to x^-} F(u).\n  $$\n- Unlike continuous random variables, discrete random variables assign **non-zero probabilities** to individual points. For example, $P(X = 1) = \\frac{1}{2}$ in the coin-toss scenario, whereas for a continuous random variable, $P(X = x) = 0$ for any specific $x$."
+          },
+          {
+            "id": "sec2-2",
+            "title": "Continuous Random Variables",
+            "content": "A **continuous random variable** $X$ is a variable that can take any value within a specified interval or range of real numbers. Unlike discrete random variables, which assume countable values, continuous random variables are characterized by an uncountable set of possible outcomes, such as time, height, or temperature.\n\n### Key Properties\n\n- **Probability Density Function (PDF):**\n  A continuous random variable is defined by its **probability density function (PDF)**, denoted $f(x)$, which satisfies the following conditions:\n  1. $f(x) \\geq 0$ for all $x \\in \\mathbb{R}$.\n  2. $\\int_{-\\infty}^{\\infty} f(x) \\, dx = 1$.\n\n  The PDF does not directly provide probabilities but describes the relative likelihood of $X$ taking on a particular value. Instead, probabilities are obtained by integrating the PDF over an interval:\n  $$\n  P(a \\leq X \\leq b) = \\int_{a}^{b} f(x) \\, dx.\n  $$\n\n- **Cumulative Distribution Function (CDF):**\n  The **cumulative distribution function (CDF)**, $F(x)$, of a continuous random variable is defined as:\n  $$\n  F(x) = P(X \\leq x) = \\int_{-\\infty}^{x} f(u) \\, du.\n  $$\n  The CDF is a non-decreasing function that approaches 0 as $x \\to -\\infty$ and 1 as $x \\to \\infty$. Unlike discrete random variables, the probability that $X$ takes on any specific value is zero:\n  $$\n  P(X = a) = \\int_{a}^{a} f(x) \\, dx = 0.\n  $$\n\n### Example\n\nConsider a continuous random variable $X$ representing the height of adult males in a population. The probability that $X$ is *exactly* 175 cm is zero, as there are infinitely many possible heights in any interval. However, the probability that $X$ lies between 170 cm and 180 cm is given by:\n$$\nP(170 \\leq X \\leq 180) = \\int_{170}^{180} f(x) \\, dx,\n$$\nwhere $f(x)$ is the PDF of $X$.\n\n### Relationship Between PDF and CDF\n\nThe PDF and CDF are closely related. Specifically:\n- The PDF is the derivative of the CDF:\n  $$\n  f(x) = \\frac{d}{dx} F(x).\n  $$\n- The CDF can be used to compute probabilities for any interval:\n  $$\n  P(a \\leq X \\leq b) = F(b) - F(a).\n  $$\n\nContinuous random variables are fundamental in modeling real-world phenomena where outcomes are measured on a continuous scale. Their properties and associated functions (PDF and CDF) provide the tools necessary to analyze and interpret such data."
+          },
+          {
+            "id": "sec2-3",
+            "title": "Cumulative Distribution Functions",
+            "content": "The **cumulative distribution function (CDF)**, denoted $F(x)$, is a fundamental concept in probability theory that describes the probability that a **random variable** $X$ takes on a value less than or equal to $x$. Formally, for any real number $x$,\n\n$$\nF(x) = P(X \\leq x).\n$$\n\n### Key Properties of CDFs\nThe CDF of a random variable $X$ satisfies the following properties:\n\n- **Non-decreasing**: If $a \\leq b$, then $F(a) \\leq F(b)$.\n- **Right-continuous**: $\\lim_{h \\to 0^+} F(x + h) = F(x)$.\n- **Limits at infinity**:\n  $$\n  \\lim_{x \\to -\\infty} F(x) = 0 \\quad \\text{and} \\quad \\lim_{x \\to \\infty} F(x) = 1.\n  $$\n\n### Discrete Random Variables\nFor a **discrete random variable** $X$ with probability mass function (PMF) $f(x)$, the CDF is defined as the sum of probabilities up to and including $x$:\n\n$$\nF(x) = P(X \\leq x) = \\sum_{u \\leq x} f(u).\n$$\n\n- The CDF is a **step function**, increasing at each value of $X$ where $f(x) > 0$.\n- The height of each step corresponds to the probability $f(x)$ at that point.\n- Example: If $X$ takes values $\\{1, 2, 3\\}$ with probabilities $\\{\\frac{1}{2}, \\frac{1}{3}, \\frac{1}{6}\\}$, then\n  $$\n  F(x) = \\begin{cases}\n  0 & x < 1, \\\\\n  \\frac{1}{2} & 1 \\leq x < 2, \\\\\n  \\frac{5}{6} & 2 \\leq x < 3, \\\\\n  1 & x \\geq 3.\n  \\end{cases}\n  $$\n\n### Continuous Random Variables\nFor a **continuous random variable** $X$ with probability density function (PDF) $f(x)$, the CDF is given by the integral of the PDF:\n\n$$\nF(x) = P(X \\leq x) = \\int_{-\\infty}^{x} f(u) \\, du.\n$$\n\n- The CDF is **continuous** and **differentiable** (where $f(x)$ is continuous).\n- The PDF can be recovered from the CDF by differentiation:\n  $$\n  f(x) = \\frac{d}{dx} F(x).\n  $$\n- The probability that $X$ lies in an interval $(a, b]$ is:\n  $$\n  P(a < X \\leq b) = F(b) - F(a).\n  $$\n\n### Relationship Between CDF and Probability\nThe CDF provides a unified way to compute probabilities for both discrete and continuous random variables:\n- For **discrete** $X$, $P(X = x) = F(x) - \\lim_{u \\to x^-} F(u)$.\n- For **continuous** $X$, $P(a < X \\leq b) = F(b) - F(a)$, and $P(X = x) = 0$ for any $x$.\n\n### Example\nConsider a continuous random variable $X$ with PDF $f(x) = 2e^{-2x}$ for $x \\geq 0$. Its CDF is:\n$$\nF(x) = \\int_{0}^{x} 2e^{-2u} \\, du = 1 - e^{-2x} \\quad \\text{for} \\quad x \\geq 0.\n$$\nTo find $P(1 < X \\leq 2)$, compute:\n$$\nP(1 < X \\leq 2) = F(2) - F(1) = (1 - e^{-4}) - (1 - e^{-2}) = e^{-2} - e^{-4}.\n$$"
+          },
+          {
+            "id": "sec2-4",
+            "title": "Joint Probability Distributions",
+            "content": "When analyzing multiple random variables simultaneously, we extend the concept of probability distributions to **joint probability distributions**. These describe the probabilistic behavior of two or more random variables defined on the same sample space.\n\n### Discrete Joint Probability Distributions\nFor two discrete random variables $X$ and $Y$, the **joint probability function** (or joint probability mass function) is defined as:\n$$\nf(x, y) = P(X = x, Y = y)\n$$\nThis function must satisfy:\n- **Non-negativity**: $f(x, y) \\geq 0$ for all $x, y$.\n- **Normalization**: $\\sum_{x} \\sum_{y} f(x, y) = 1$.\n\nThe **marginal probability functions** of $X$ and $Y$ are obtained by summing over the other variable:\n$$\nf_1(x) = \\sum_{y} f(x, y), \\quad f_2(y) = \\sum_{x} f(x, y).\n$$\n\n### Continuous Joint Probability Distributions\nFor continuous random variables $X$ and $Y$, the **joint probability density function (pdf)** $f(x, y)$ satisfies:\n- **Non-negativity**: $f(x, y) \\geq 0$.\n- **Normalization**: $\\int_{-\\infty}^{\\infty} \\int_{-\\infty}^{\\infty} f(x, y) \\, dx \\, dy = 1$.\n\nThe probability that $(X, Y)$ lies in a region $\\mathcal{R}$ is given by:\n$$\nP((X, Y) \\in \\mathcal{R}) = \\iint_{\\mathcal{R}} f(x, y) \\, dx \\, dy.\n$$\n\nThe **marginal pdfs** of $X$ and $Y$ are obtained by integrating over the other variable:\n$$\nf_1(x) = \\int_{-\\infty}^{\\infty} f(x, y) \\, dy, \\quad f_2(y) = \\int_{-\\infty}^{\\infty} f(x, y) \\, dx.\n$$\n\n### Independence of Random Variables\nTwo random variables $X$ and $Y$ are **independent** if their joint distribution factors into the product of their marginal distributions:\n- **Discrete case**: $f(x, y) = f_1(x) f_2(y)$ for all $x, y$.\n- **Continuous case**: $f(x, y) = f_1(x) f_2(y)$ for all $x, y$.\n\nIf this condition fails, $X$ and $Y$ are **dependent**.\n\n### Joint Cumulative Distribution Function (CDF)\nThe **joint CDF** of $X$ and $Y$ is defined as:\n$$\nF(x, y) = P(X \\leq x, Y \\leq y).\n$$\nFor continuous variables, it relates to the joint pdf via:\n$$\nF(x, y) = \\int_{-\\infty}^{x} \\int_{-\\infty}^{y} f(u, v) \\, dv \\, du.\n$$\nThe marginal CDFs are obtained as:\n$$\nF_1(x) = F(x, \\infty), \\quad F_2(y) = F(\\infty, y).\n$$\n\nJoint distributions form the foundation for analyzing relationships between random variables, enabling the study of **conditional distributions**, **covariance**, and **correlation**."
+          }
+        ]
+      },
+      {
+        "id": "ch3",
+        "title": "Mathematical Expectation and Moments",
+        "sections": [
+          {
+            "id": "sec3-1",
+            "title": "Expectation of Random Variables",
+            "content": "The **expectation** (or **expected value**) of a random variable is a fundamental concept in probability, representing the long-run average value of the variable over many independent repetitions of an experiment. It provides a measure of central tendency, summarizing the distribution of the random variable in a single value.\n\n### Definition of Expectation\nFor a **discrete random variable** $X$ with probability mass function (PMF) $P(X = x) = f(x)$, the expectation is defined as:\n\n$$\nE(X) = \\sum_{x} x \\cdot f(x),\n$$\n\nwhere the summation is taken over all possible values of $X$. If $X$ takes on an infinite number of values, the series must converge absolutely for the expectation to exist.\n\nFor a **continuous random variable** $X$ with probability density function (PDF) $f(x)$, the expectation is given by:\n\n$$\nE(X) = \\int_{-\\infty}^{\\infty} x \\cdot f(x) \\, dx,\n$$\n\nprovided the integral converges absolutely.\n\n### Properties of Expectation\nThe expectation operator $E(\\cdot)$ satisfies several key properties, which are essential for calculations:\n\n- **Linearity**: For any constants $a$ and $b$, and random variables $X$ and $Y$,\n  $$\n  E(aX + bY) = aE(X) + bE(Y).\n  $$\n  This property holds regardless of whether $X$ and $Y$ are independent.\n\n- **Expectation of a Constant**: For any constant $c$,\n  $$\n  E(c) = c.\n  $$\n\n- **Multiplicative Property for Independent Variables**: If $X$ and $Y$ are independent random variables, then\n  $$\n  E(XY) = E(X)E(Y).\n  $$\n\n### Expectation of Functions of Random Variables\nIf $g(X)$ is a function of a random variable $X$, the expectation of $g(X)$ can be computed as follows:\n\n- For a **discrete** $X$:\n  $$\n  E[g(X)] = \\sum_{x} g(x) \\cdot f(x).\n  $$\n\n- For a **continuous** $X$:\n  $$\n  E[g(X)] = \\int_{-\\infty}^{\\infty} g(x) \\cdot f(x) \\, dx.\n  $$\n\nThis result is particularly useful because it allows us to compute expectations without explicitly deriving the distribution of $g(X)$.\n\n### Example\nConsider a discrete random variable $X$ with the following PMF:\n\n$$\nX = \\begin{cases}\n1 & \\text{with probability } 1/2, \\\\\n2 & \\text{with probability } 1/3, \\\\\n-1 & \\text{with probability } 1/6.\n\\end{cases}\n$$\n\nThe expectation of $X$ is calculated as:\n\n$$\nE(X) = 1 \\cdot \\frac{1}{2} + 2 \\cdot \\frac{1}{3} + (-1) \\cdot \\frac{1}{6} = \\frac{1}{2} + \\frac{2}{3} - \\frac{1}{6} = \\frac{4}{3}.\n$$\n\nSimilarly, the expectation of $X^2$ is:\n\n$$\nE(X^2) = 1^2 \\cdot \\frac{1}{2} + 2^2 \\cdot \\frac{1}{3} + (-1)^2 \\cdot \\frac{1}{6} = \\frac{1}{2} + \\frac{4}{3} + \\frac{1}{6} = \\frac{11}{6}.\n$$\n\nThese calculations illustrate how the expectation operator can be applied to both the random variable itself and functions of it."
+          },
+          {
+            "id": "sec3-2",
+            "title": "Variance and Standard Deviation",
+            "content": "The **variance** and **standard deviation** are fundamental measures of dispersion that quantify the spread of a random variable's values around its **mean** ($\\mu$).\n\n### Variance\nThe **variance** of a random variable $X$, denoted $\\operatorname{Var}(X)$ or $\\sigma_X^2$, is defined as the **expected value** of the squared deviation from the mean:\n\n$$\n\\sigma_X^2 = \\operatorname{Var}(X) = E\\left[(X - \\mu)^2\\right].\n$$\n\n- For a **discrete** random variable with probability mass function $f(x)$:\n  $$\n  \\sigma_X^2 = \\sum (x_j - \\mu)^2 f(x_j).\n  $$\n- For a **continuous** random variable with probability density function $f(x)$:\n  $$\n  \\sigma_X^2 = \\int_{-\\infty}^{\\infty} (x - \\mu)^2 f(x) \\, dx.\n  $$\n\nThe variance is always nonnegative ($\\sigma_X^2 \\geq 0$), with $\\sigma_X^2 = 0$ only if $X$ is a constant.\n\n### Standard Deviation\nThe **standard deviation** ($\\sigma_X$) is the positive square root of the variance:\n\n$$\n\\sigma_X = \\sqrt{\\operatorname{Var}(X)}.\n$$\n\n- Unlike variance, the standard deviation shares the same units as $X$, making it more interpretable for real-world applications.\n- A small $\\sigma_X$ indicates that $X$'s values are tightly clustered around $\\mu$, while a large $\\sigma_X$ suggests greater dispersion.\n\n### Key Properties\n- **Linear Transformations**: For constants $a$ and $b$,\n  $$\n  \\operatorname{Var}(aX + b) = a^2 \\operatorname{Var}(X).\n  $$\n- **Independence**: If $X$ and $Y$ are independent,\n  $$\n  \\operatorname{Var}(X + Y) = \\operatorname{Var}(X) + \\operatorname{Var}(Y).\n  $$\n- **Computational Formula**: Variance can also be expressed as\n  $$\n  \\sigma_X^2 = E(X^2) - \\mu^2,\n  $$\n  which is often easier to compute.\n\n### Example\nConsider a discrete random variable $X$ with $E(X) = 2$ and $E(X^2) = 8$. The variance is:\n$$\n\\sigma_X^2 = E(X^2) - \\mu^2 = 8 - 2^2 = 4,\n$$\nand the standard deviation is $\\sigma_X = \\sqrt{4} = 2$.\n\nVariance and standard deviation are essential for characterizing uncertainty and comparing distributions. They form the basis for advanced topics like **Chebyshev’s inequality** and **moment-generating functions**."
+          },
+          {
+            "id": "sec3-3",
+            "title": "Moment Generating Functions",
+            "content": "The **moment generating function (MGF)** of a random variable $X$, denoted $M_X(t)$, is a powerful tool for analyzing its distribution. It is defined as the expected value of $e^{tX}$:\n\n$$\nM_X(t) = E(e^{tX}),\n$$\n\nwhere $t$ is a real-valued parameter. For a **discrete random variable**, the MGF is given by:\n\n$$\nM_X(t) = \\sum e^{tx} f(x),\n$$\n\nwhile for a **continuous random variable**, it is:\n\n$$\nM_X(t) = \\int_{-\\infty}^{\\infty} e^{tx} f(x) \\, dx.\n$$\n\nThe MGF derives its name from its ability to generate **moments** of $X$. By expanding $e^{tX}$ in a **Taylor series** around $t=0$, we obtain:\n\n$$\nM_X(t) = 1 + \\mu t + \\mu_2' \\frac{t^2}{2!} + \\cdots + \\mu_r' \\frac{t^r}{r!} + \\cdots,\n$$\n\nwhere $\\mu_r' = E(X^r)$ is the $r$th **raw moment** of $X$. Differentiating $M_X(t)$ $r$ times with respect to $t$ and evaluating at $t=0$ yields the $r$th raw moment:\n\n$$\n\\mu_r' = \\left. \\frac{d^r}{dt^r} M_X(t) \\right|_{t=0}.\n$$\n\nKey properties of MGFs include:\n\n- **Uniqueness**: If two random variables have the same MGF, they share the same probability distribution (Theorem 3-10).\n- **Linear transformations**: For constants $a$ and $b$ ($b \\neq 0$), the MGF of $(X + a)/b$ is:\n  $$\n  M_{(X + a)/b}(t) = e^{at/b} M_X\\left(\\frac{t}{b}\\right).\n  $$\n- **Sums of independent variables**: If $X$ and $Y$ are independent, the MGF of $X + Y$ is the product of their MGFs:\n  $$\n  M_{X + Y}(t) = M_X(t) M_Y(t).\n  $$\n\nMGFs simplify the computation of moments and are particularly useful in proving limit theorems, such as the **Central Limit Theorem**. However, they may not exist for all distributions, as convergence of the defining integral or sum is required. In such cases, **characteristic functions** (which always exist) are often used instead."
+          },
+          {
+            "id": "sec3-4",
+            "title": "Chebyshev’s Inequality and the Law of Large Numbers",
+            "content": "**Chebyshev’s Inequality** provides a fundamental bound on the probability that a random variable deviates from its **mean**, using only its **variance**. Formally, for any random variable $X$ with finite mean $\\mu = E(X)$ and variance $\\sigma^2 = \\text{Var}(X)$, and for any $\\epsilon > 0$:\n\n$$\nP\\left(|X - \\mu| \\geq \\epsilon\\right) \\leq \\frac{\\sigma^2}{\\epsilon^2}.\n$$\n\nEquivalently, setting $\\epsilon = k\\sigma$ yields:\n\n$$\nP\\left(|X - \\mu| \\geq k\\sigma\\right) \\leq \\frac{1}{k^2}.\n$$\n\nKey properties:\n- **Distribution-free**: Applies to *any* random variable with finite variance, regardless of its distribution.\n- **Conservative bound**: Often loose, but guarantees that extreme deviations are unlikely. For example, $P(|X - \\mu| \\geq 2\\sigma) \\leq 0.25$, meaning at least 75% of the probability mass lies within 2 standard deviations of the mean.\n\n**Proof sketch**: For a continuous random variable, split the integral defining $\\sigma^2$ into regions where $|X - \\mu| \\geq \\epsilon$ and $|X - \\mu| < \\epsilon$. The former term is bounded by $\\epsilon^2 P(|X - \\mu| \\geq \\epsilon)$, yielding the inequality.\n\n---\n\nThe **Law of Large Numbers (LLN)** connects **sample averages** to **expected values**, formalizing the intuition that averages stabilize as sample size grows. Let $X_1, X_2, \\dots$ be independent and identically distributed (i.i.d.) random variables with mean $\\mu$ and finite variance $\\sigma^2$. Define the sample average:\n\n$$\n\\overline{X}_n = \\frac{1}{n} \\sum_{i=1}^n X_i.\n$$\n\nThe **Weak Law of Large Numbers** states:\n\n$$\n\\lim_{n \\to \\infty} P\\left(|\\overline{X}_n - \\mu| \\geq \\epsilon\\right) = 0 \\quad \\text{for any } \\epsilon > 0.\n$$\n\n**Key insights**:\n- **Convergence in probability**: $\\overline{X}_n$ converges to $\\mu$ as $n \\to \\infty$.\n- **Proof via Chebyshev’s Inequality**: Apply the inequality to $\\overline{X}_n$, noting that $\\text{Var}(\\overline{X}_n) = \\sigma^2/n$, which vanishes as $n \\to \\infty$.\n\n**Example**: For Bernoulli trials with success probability $p$, the LLN implies that the proportion of successes converges to $p$ as the number of trials grows.\n\n**Strong vs. Weak LLN**: The *strong law* guarantees almost sure convergence ($\\overline{X}_n \\to \\mu$ with probability 1), but the weak law suffices for most practical applications. Both laws underscore the foundational role of expectation in probability theory."
+          }
+        ]
+      },
+      {
+        "id": "ch4",
+        "title": "Key Probability Distributions",
+        "sections": [
+          {
+            "id": "sec4-1",
+            "title": "Binomial and Multinomial Distributions",
+            "content": "The **binomial distribution** models the number of successes in a fixed number of independent **Bernoulli trials**, each with the same probability of success. Let $X$ denote the number of successes in $n$ trials, where each trial has success probability $p$ and failure probability $q = 1 - p$. The probability mass function (PMF) of $X$ is given by:\n\n$$\nP(X = x) = \\binom{n}{x} p^x q^{n - x}, \\quad x = 0, 1, \\dots, n,\n$$\n\nwhere $\\binom{n}{x}$ is the binomial coefficient. Key properties include:\n- **Mean (expected value)**: $E(X) = np$\n- **Variance**: $\\text{Var}(X) = npq$\n- **Moment-generating function (MGF)**: $M_X(t) = (pe^t + q)^n$\n\nThe binomial distribution is applicable in scenarios such as quality control, survey sampling, and medical trials, where outcomes are binary (e.g., success/failure, yes/no).\n\nThe **multinomial distribution** generalizes the binomial distribution to experiments with more than two possible outcomes. Suppose an experiment consists of $n$ independent trials, where each trial results in one of $k$ mutually exclusive outcomes $A_1, A_2, \\dots, A_k$ with probabilities $p_1, p_2, \\dots, p_k$ (where $\\sum_{i=1}^k p_i = 1$). Let $X_i$ denote the number of times outcome $A_i$ occurs in $n$ trials. The joint PMF of $X_1, X_2, \\dots, X_k$ is:\n\n$$\nP(X_1 = x_1, X_2 = x_2, \\dots, X_k = x_k) = \\frac{n!}{x_1! x_2! \\cdots x_k!} p_1^{x_1} p_2^{x_2} \\cdots p_k^{x_k},\n$$\n\nwhere $\\sum_{i=1}^k x_i = n$. Key properties include:\n- **Marginal mean of $X_i$**: $E(X_i) = np_i$\n- **Marginal variance of $X_i$**: $\\text{Var}(X_i) = np_i(1 - p_i)$\n- **Covariance between $X_i$ and $X_j$**: $\\text{Cov}(X_i, X_j) = -np_ip_j$ for $i \\neq j$\n\nThe multinomial distribution is useful in modeling categorical data, such as election results, genetic inheritance patterns, or consumer preference surveys. Both distributions assume independence and identical probability distributions across trials."
+          },
+          {
+            "id": "sec4-2",
+            "title": "Poisson and Hypergeometric Distributions",
+            "content": "The **Poisson** and **hypergeometric distributions** are fundamental models for discrete random variables, each suited to distinct scenarios.\n\n### Poisson Distribution\nThe **Poisson distribution** models the number of events occurring in a fixed interval of time or space, given a constant average rate ($\\lambda$) and independence of events. It is defined by:\n\n$$\nP(X = k) = \\frac{e^{-\\lambda} \\lambda^k}{k!}, \\quad k = 0, 1, 2, \\dots\n$$\n\n**Key properties:**\n- **Mean and variance:** Both equal $\\lambda$.\n- **Applications:** Counts of rare events (e.g., accidents, arrivals, defects).\n- **Relation to binomial:** Approximates the binomial distribution when $n \\to \\infty$ and $p \\to 0$ such that $np = \\lambda$ remains constant.\n\n**Example:** If $\\lambda = 3$ accidents/day, the probability of exactly 2 accidents in a day is $P(X=2) = \\frac{e^{-3} 3^2}{2!} \\approx 0.224$.\n\n### Hypergeometric Distribution\nThe **hypergeometric distribution** describes sampling *without replacement* from a finite population of size $N$ containing $K$ successes. The probability of $k$ successes in $n$ draws is:\n\n$$\nP(X = k) = \\frac{\\binom{K}{k} \\binom{N-K}{n-k}}{\\binom{N}{n}}, \\quad \\max(0, n - (N-K)) \\leq k \\leq \\min(n, K)\n$$\n\n**Key properties:**\n- **Mean:** $\\mu = n \\frac{K}{N}$.\n- **Variance:** $\\sigma^2 = n \\frac{K}{N} \\left(1 - \\frac{K}{N}\\right) \\frac{N-n}{N-1}$.\n- **Applications:** Quality control, ecological studies, or any scenario where depletion of the population matters.\n\n**Example:** In a lot of 20 items (5 defective), the probability of drawing 2 defectives in 4 samples is $P(X=2) = \\frac{\\binom{5}{2} \\binom{15}{2}}{\\binom{20}{4}} \\approx 0.217$.\n\n### Contrast\n- **Poisson:** Infinite population, independent events.\n- **Hypergeometric:** Finite population, dependent draws (sampling without replacement).\n\nBoth distributions are pivotal in statistical modeling, with the Poisson often serving as a limiting case of the binomial, and the hypergeometric addressing finite-population corrections."
+          },
+          {
+            "id": "sec4-3",
+            "title": "Normal and Exponential Distributions",
+            "content": "The **normal distribution** and **exponential distribution** are two fundamental continuous probability distributions with wide-ranging applications in statistics and probability theory.\n\n### **Normal Distribution**\nThe **normal distribution**, also known as the **Gaussian distribution**, is defined by its **probability density function (PDF)**:\n\n$$\nf(x) = \\frac{1}{\\sigma \\sqrt{2\\pi}} e^{-\\frac{(x - \\mu)^2}{2\\sigma^2}}, \\quad -\\infty < x < \\infty\n$$\n\nwhere:\n- $\\mu$ is the **mean** (location parameter),\n- $\\sigma$ is the **standard deviation** (scale parameter),\n- $\\sigma^2$ is the **variance**.\n\nKey properties:\n- **Symmetry**: The distribution is symmetric about $\\mu$.\n- **Empirical Rule**:\n  - ~68% of data falls within $\\mu \\pm \\sigma$,\n  - ~95% within $\\mu \\pm 2\\sigma$,\n  - ~99.7% within $\\mu \\pm 3\\sigma$.\n- **Standard Normal Distribution**: When $\\mu = 0$ and $\\sigma = 1$, the distribution is called the **standard normal**, denoted $Z \\sim N(0,1)$.\n- **Cumulative Distribution Function (CDF)**: Given by $F(z) = \\frac{1}{2} \\left[1 + \\text{erf}\\left(\\frac{z}{\\sqrt{2}}\\right)\\right]$, where $\\text{erf}$ is the error function.\n\nThe normal distribution approximates many natural phenomena and is central to the **Central Limit Theorem**, which states that the sum of independent random variables tends toward normality as sample size grows.\n\n### **Exponential Distribution**\nThe **exponential distribution** models the time between events in a **Poisson process** (e.g., failure times, arrival intervals). Its **PDF** is:\n\n$$\nf(x) = \\begin{cases}\n\\lambda e^{-\\lambda x} & x \\geq 0, \\\\\n0 & x < 0,\n\\end{cases}\n$$\n\nwhere:\n- $\\lambda > 0$ is the **rate parameter**,\n- **Mean** = $\\frac{1}{\\lambda}$,\n- **Variance** = $\\frac{1}{\\lambda^2}$.\n\nKey properties:\n- **Memoryless Property**: $P(X > s + t \\mid X > s) = P(X > t)$.\n- **Relation to Poisson**: If events occur at rate $\\lambda$ per unit time, the time between events follows $\\text{Exp}(\\lambda)$.\n- **CDF**: $F(x) = 1 - e^{-\\lambda x}$ for $x \\geq 0$.\n\n### **Comparison**\n- The normal distribution is **symmetric** and models continuous data with a central tendency.\n- The exponential distribution is **right-skewed** and models waiting times or lifetimes.\n\nBoth distributions are foundational in statistical inference, hypothesis testing, and stochastic processes."
+          },
+          {
+            "id": "sec4-4",
+            "title": "Other Important Continuous Distributions",
+            "content": "Beyond the **normal**, **uniform**, and **exponential** distributions, several other continuous distributions play pivotal roles in probability and statistics. Below are key examples, each defined by its **probability density function (PDF)** and core properties:\n\n- **Gamma Distribution**\n  - **PDF**: $$f(x; \\alpha, \\beta) = \\frac{\\beta^\\alpha x^{\\alpha-1} e^{-\\beta x}}{\\Gamma(\\alpha)}, \\quad x > 0, \\alpha > 0, \\beta > 0$$\n    where $\\Gamma(\\alpha)$ is the **gamma function**.\n  - **Properties**:\n    - Models waiting times for $\\alpha$ independent Poisson events.\n    - **Exponential distribution** is a special case ($\\alpha = 1$).\n    - **Mean**: $\\alpha/\\beta$; **Variance**: $\\alpha/\\beta^2$.\n\n- **Beta Distribution**\n  - **PDF**: $$f(x; \\alpha, \\beta) = \\frac{x^{\\alpha-1} (1-x)^{\\beta-1}}{B(\\alpha, \\beta)}, \\quad 0 \\leq x \\leq 1, \\alpha > 0, \\beta > 0$$\n    where $B(\\alpha, \\beta)$ is the **beta function**.\n  - **Properties**:\n    - Defined on $[0,1]$, useful for modeling proportions or probabilities.\n    - **Uniform distribution** is a special case ($\\alpha = \\beta = 1$).\n\n- **Cauchy Distribution**\n  - **PDF**: $$f(x; x_0, \\gamma) = \\frac{1}{\\pi \\gamma \\left[1 + \\left(\\frac{x - x_0}{\\gamma}\\right)^2\\right]}, \\quad -\\infty < x < \\infty$$\n  - **Properties**:\n    - Heavy-tailed; **mean and variance are undefined**.\n    - Arises in physics (e.g., resonance phenomena) and as the ratio of two independent normal variables.\n\n- **Chi-Square ($\\chi^2$) Distribution**\n  - **PDF**: $$f(x; k) = \\frac{x^{k/2 - 1} e^{-x/2}}{2^{k/2} \\Gamma(k/2)}, \\quad x > 0, k \\in \\mathbb{N}$$\n  - **Properties**:\n    - Sum of squares of $k$ independent standard normal variables.\n    - Critical for **hypothesis testing** (e.g., goodness-of-fit tests) and **confidence intervals** for variance.\n\n- **Student’s $t$ Distribution**\n  - **PDF**: $$f(t; \\nu) = \\frac{\\Gamma\\left(\\frac{\\nu+1}{2}\\right)}{\\sqrt{\\nu \\pi} \\Gamma\\left(\\frac{\\nu}{2}\\right)} \\left(1 + \\frac{t^2}{\\nu}\\right)^{-(\\nu+1)/2}, \\quad -\\infty < t < \\infty$$\n  - **Properties**:\n    - Used for small-sample inference (e.g., **$t$-tests**).\n    - Converges to the **standard normal** as $\\nu \\to \\infty$.\n\n- **$F$ Distribution**\n  - **PDF**: $$f(x; d_1, d_2) = \\frac{\\left(\\frac{d_1}{d_2}\\right)^{d_1/2} x^{d_1/2 - 1}}{B(d_1/2, d_2/2) \\left(1 + \\frac{d_1}{d_2} x\\right)^{(d_1 + d_2)/2}}, \\quad x > 0$$\n  - **Properties**:\n    - Ratio of two independent $\\chi^2$ variables, scaled by their degrees of freedom.\n    - Fundamental in **ANOVA** and regression analysis.\n\n**Key Relationships**:\n- The $\\chi^2$, $t$, and $F$ distributions are interconnected (e.g., $t^2$ with $\\nu$ degrees of freedom follows an $F$ distribution with $1$ and $\\nu$ degrees of freedom).\n- Many distributions (e.g., **exponential**, **gamma**) are special cases or limits of others, reflecting their versatility in modeling diverse phenomena."
+          }
+        ]
+      },
+      {
+        "id": "ch5",
+        "title": "Introduction to Statistical Inference",
+        "sections": [
+          {
+            "id": "sec5-1",
+            "title": "Sampling Theory and Distributions",
+            "content": "In **statistical inference**, **sampling theory** provides the foundation for drawing conclusions about a **population** based on a **sample**. A **random sample** is a subset of the population selected such that every possible sample of size $n$ has an equal probability of being chosen. This ensures that the sample is **representative**, minimizing bias and allowing for valid generalization.\n\n### Key Concepts in Sampling Theory\n- **Population vs. Sample**:\n  - A **population** is the entire group of interest, characterized by **parameters** (e.g., $\\mu$, $\\sigma^2$).\n  - A **sample** is a subset of the population, described by **statistics** (e.g., $\\bar{X}$, $S^2$).\n- **Sampling Distributions**:\n  The probability distribution of a **statistic** (e.g., the sample mean $\\bar{X}$) over all possible samples of size $n$ is called a **sampling distribution**. For example:\n  - The **sampling distribution of the mean** $\\bar{X}$ has:\n    - **Mean**: $E(\\bar{X}) = \\mu$ (unbiased estimator of $\\mu$).\n    - **Variance**: $\\text{Var}(\\bar{X}) = \\frac{\\sigma^2}{n}$ (assuming **independent and identically distributed (i.i.d.)** observations).\n    - **Shape**: Approximately **normal** for large $n$ (by the **Central Limit Theorem (CLT)**), even if the population is non-normal.\n\n### Important Sampling Distributions\n1. **Normal Distribution**:\n   If the population is normal with mean $\\mu$ and variance $\\sigma^2$, then $\\bar{X} \\sim N\\left(\\mu, \\frac{\\sigma^2}{n}\\right)$. For non-normal populations, the CLT ensures $\\bar{X}$ is approximately normal for $n \\geq 30$.\n\n2. **Chi-Square ($\\chi^2$) Distribution**:\n   Used for **variance estimation**. If $X_1, X_2, \\dots, X_n$ are i.i.d. $N(\\mu, \\sigma^2)$, then:\n   $$\n   \\frac{(n-1)S^2}{\\sigma^2} \\sim \\chi^2_{n-1},\n   $$\n   where $S^2$ is the sample variance.\n\n3. **Student’s $t$-Distribution**:\n   Arises when estimating the mean of a normal population with **unknown variance**. The statistic:\n   $$\n   T = \\frac{\\bar{X} - \\mu}{S/\\sqrt{n}} \\sim t_{n-1}\n   $$\n   follows a $t$-distribution with $n-1$ **degrees of freedom**.\n\n4. **$F$-Distribution**:\n   Used to compare variances of two normal populations. If $S_1^2$ and $S_2^2$ are sample variances from independent samples of sizes $n_1$ and $n_2$, then:\n   $$\n   F = \\frac{S_1^2/\\sigma_1^2}{S_2^2/\\sigma_2^2} \\sim F_{n_1-1, n_2-1}.\n   $$\n\n### Practical Implications\n- **Law of Large Numbers (LLN)**: As $n \\to \\infty$, $\\bar{X} \\to \\mu$ (sample mean converges to the population mean).\n- **Central Limit Theorem (CLT)**: For large $n$, the sampling distribution of $\\bar{X}$ is approximately normal, regardless of the population distribution. This justifies the use of normal-based methods for inference.\n\nUnderstanding these distributions is critical for constructing **confidence intervals** and performing **hypothesis tests**, the core tools of statistical inference."
+          },
+          {
+            "id": "sec5-2",
+            "title": "Estimation of Parameters",
+            "content": "In **statistical inference**, the **estimation of parameters** is a fundamental task where we use sample data to infer the values of unknown population parameters. This process is essential for making data-driven decisions and generalizing findings from a sample to the broader population.\n\n### Key Concepts in Parameter Estimation\n\n- **Point Estimation**: Provides a single value as an estimate of the unknown parameter.\n  - **Example**: The sample mean $\\bar{X}$ is a point estimate of the population mean $\\mu$.\n  - **Unbiased Estimator**: A statistic $\\hat{\\theta}$ is an **unbiased estimator** of a parameter $\\theta$ if its expected value equals the parameter, i.e., $E(\\hat{\\theta}) = \\theta$. For instance, $E(\\bar{X}) = \\mu$ and $E(S^2) = \\sigma^2$, where $S^2$ is the sample variance.\n  - **Efficient Estimator**: Among unbiased estimators, the one with the smallest variance is called the **most efficient estimator**. For example, the sample mean $\\bar{X}$ is more efficient than the sample median for estimating $\\mu$ in a normal distribution.\n\n- **Interval Estimation**: Provides a range of values (an **interval**) within which the parameter is expected to lie with a certain **confidence level**.\n  - **Confidence Interval (CI)**: An interval $(L, U)$ such that $P(L \\leq \\theta \\leq U) = 1 - \\alpha$, where $\\alpha$ is the significance level (e.g., 0.05 for a 95% CI).\n  - **Example**: A 95% confidence interval for the population mean $\\mu$ when $\\sigma$ is known is given by:\n    $$\n    \\bar{X} \\pm z_{\\alpha/2} \\cdot \\frac{\\sigma}{\\sqrt{n}},\n    $$\n    where $z_{\\alpha/2}$ is the critical value from the standard normal distribution.\n\n### Methods of Estimation\n\n1. **Method of Moments**:\n   - Equates sample moments to population moments to solve for the parameters.\n   - **Example**: For a normal distribution with mean $\\mu$ and variance $\\sigma^2$, the first two sample moments $\\bar{X}$ and $\\frac{1}{n}\\sum (X_i - \\bar{X})^2$ are set equal to $\\mu$ and $\\sigma^2$, respectively.\n\n2. **Maximum Likelihood Estimation (MLE)**:\n   - Selects the parameter value that maximizes the **likelihood function**, which measures the probability of observing the given sample.\n   - **Example**: For a sample $X_1, X_2, \\dots, X_n$ from a normal distribution, the MLE of $\\mu$ is $\\bar{X}$, and the MLE of $\\sigma^2$ is $\\frac{1}{n}\\sum (X_i - \\bar{X})^2$.\n\n### Properties of Estimators\n\n- **Consistency**: An estimator $\\hat{\\theta}_n$ is consistent if it converges in probability to the true parameter $\\theta$ as the sample size $n$ increases, i.e., $\\lim_{n \\to \\infty} P(|\\hat{\\theta}_n - \\theta| < \\epsilon) = 1$ for any $\\epsilon > 0$.\n- **Sufficiency**: An estimator is sufficient if it captures all the information about the parameter contained in the sample. For example, the sample mean $\\bar{X}$ is a sufficient statistic for $\\mu$ in a normal distribution.\n\n### Practical Considerations\n\n- **Bias-Variance Tradeoff**: While unbiasedness is desirable, sometimes a slightly biased estimator with lower variance may be preferable (e.g., using $n-1$ in the denominator for sample variance to achieve unbiasedness).\n- **Sample Size**: Larger samples generally yield more precise estimates, reducing the width of confidence intervals and improving the reliability of inferences.\n\nBy understanding these concepts, we can effectively estimate population parameters and quantify the uncertainty associated with our estimates."
+          },
+          {
+            "id": "sec5-3",
+            "title": "Hypothesis Testing Fundamentals",
+            "content": "In statistical inference, **hypothesis testing** is a formal procedure used to evaluate claims about a population based on sample data. The process begins with two competing statements:\n\n- The **null hypothesis** ($H_0$): A default assumption that there is *no effect* or *no difference*. For example, $H_0: \\mu = \\mu_0$ asserts that the population mean equals a specified value.\n- The **alternative hypothesis** ($H_1$ or $H_a$): A statement that contradicts $H_0$, often representing an effect or difference of interest (e.g., $H_1: \\mu \\neq \\mu_0$, $H_1: \\mu > \\mu_0$, or $H_1: \\mu < \\mu_0$).\n\n### Key Steps in Hypothesis Testing\n1. **Formulate Hypotheses**: Define $H_0$ and $H_1$ based on the research question.\n2. **Choose a Significance Level ($\\alpha$)**: A threshold (e.g., $\\alpha = 0.05$) for rejecting $H_0$, representing the probability of a **Type I error** (false positive).\n3. **Select a Test Statistic**: A standardized value (e.g., $Z$, $t$, $\\chi^2$, $F$) calculated from sample data to compare against a critical value or distribution.\n   - Example: For a population mean with known variance, the test statistic is:\n     $$\n     Z = \\frac{\\bar{X} - \\mu_0}{\\sigma / \\sqrt{n}}.\n     $$\n4. **Determine the Rejection Region**: Critical values or $p$-values define when $H_0$ is rejected.\n   - For a two-tailed test at $\\alpha = 0.05$, reject $H_0$ if $|Z| > 1.96$.\n5. **Make a Decision**: Compare the test statistic to the rejection region or compute the $p$-value (probability of observing the data *if $H_0$ is true*). Reject $H_0$ if $p \\leq \\alpha$.\n6. **Draw Conclusions**: Interpret results in the context of the problem, acknowledging potential **Type II errors** (false negatives, denoted by $\\beta$).\n\n### Types of Errors\n- **Type I Error**: Rejecting $H_0$ when it is true (probability = $\\alpha$).\n- **Type II Error**: Failing to reject $H_0$ when $H_1$ is true (probability = $\\beta$). The **power** of a test ($1 - \\beta$) measures its ability to detect a true effect.\n\n### Test Classifications\n- **One-tailed vs. Two-tailed Tests**:\n  - *One-tailed*: Tests for directionality (e.g., $H_1: \\mu > \\mu_0$).\n  - *Two-tailed*: Tests for any difference (e.g., $H_1: \\mu \\neq \\mu_0$).\n- **Parametric vs. Nonparametric Tests**:\n  - *Parametric*: Assume a specific distribution (e.g., $t$-test for normal data).\n  - *Nonparametric*: Distribution-free (e.g., Wilcoxon rank-sum test).\n\nHypothesis testing provides a structured framework to assess evidence, but conclusions are probabilistic and subject to error. Always pair results with **effect size** and **confidence intervals** for robust inference."
+          },
+          {
+            "id": "sec5-4",
+            "title": "Nonparametric Methods",
+            "content": "Nonparametric methods provide a flexible framework for statistical inference when assumptions about **parametric models**—such as normality or known distributional forms—are untenable. Unlike parametric approaches, which rely on specific probability distributions (e.g., $N(\\mu, \\sigma^2)$), nonparametric methods make minimal assumptions about the underlying population, often leveraging **ranks**, **signs**, or **permutation tests** to draw conclusions.\n\n### Key Characteristics:\n- **Distribution-free**: No reliance on a predefined probability distribution.\n- **Robustness**: Less sensitive to outliers or deviations from assumptions.\n- **Versatility**: Applicable to ordinal data, small samples, or non-normal populations.\n\n### Common Nonparametric Tests:\n- **Sign Test**: Compares paired samples using the median (e.g., testing $H_0: \\text{median difference} = 0$).\n- **Mann-Whitney $U$ Test**: A nonparametric alternative to the two-sample $t$-test for independent samples.\n- **Kruskal-Wallis $H$ Test**: Extends the Mann-Whitney test to $k > 2$ groups (analogous to one-way ANOVA).\n- **Spearman’s Rank Correlation**: Measures monotonic relationships between variables using ranks.\n\n### Advantages and Limitations:\n- **Advantages**:\n  - Fewer assumptions reduce the risk of model misspecification.\n  - Effective for small or skewed datasets.\n- **Limitations**:\n  - Generally less **powerful** than parametric tests when assumptions hold.\n  - May require larger samples to detect effects.\n\n### Example: The Sign Test\nFor paired data $(X_i, Y_i)$, test $H_0: P(X > Y) = 0.5$ by counting the number of positive differences $S = \\sum_{i=1}^n \\mathbb{I}(X_i > Y_i)$. Under $H_0$, $S \\sim \\text{Binomial}(n, 0.5)$, enabling exact or asymptotic inference.\n\nNonparametric methods are indispensable when data violate parametric assumptions, offering a rigorous yet adaptable toolkit for statistical inference."
+          }
+        ]
+      }
+    ],
+    "exercises": [
+      {
+        "id": "ex-proba-ch1-0",
+        "courseId": "proba",
+        "chapterId": "ch1",
+        "title": "Calculating Basic Probabilities",
+        "difficulty": "easy",
+        "prerequisites": [
+          {
+            "sectionId": "sec1-1",
+            "chapterId": "ch1",
+            "label": "Basic Concepts of Probability"
+          }
+        ],
+        "problem": "A standard six-sided die is rolled once. Calculate the following probabilities:\n\n1. The probability of rolling a 4, denoted as $P(4)$.\n2. The probability of rolling an even number, denoted as $P(\\text{Even})$. \n3. The probability of rolling a number greater than 2, denoted as $P(\\text{Number} > 2)$.\n\nAssume the die is fair, meaning each outcome is equally likely.",
+        "steps": [
+          "Step 1: Identify the total number of possible outcomes. For a six-sided die, the sample space is $S = \\{1, 2, 3, 4, 5, 6\\}$, so there are $6$ possible outcomes.",
+          "Step 2: Calculate $P(4)$. There is only one favorable outcome (rolling a 4), so $P(4) = \\frac{\\text{Number of favorable outcomes}}{\\text{Total number of outcomes}} = \\frac{1}{6}$.",
+          "Step 3: Calculate $P(\\text{Even})$. The even numbers on the die are $2, 4,$ and $6$, so there are $3$ favorable outcomes. Thus, $P(\\text{Even}) = \\frac{3}{6} = \\frac{1}{2}$.",
+          "Step 4: Calculate $P(\\text{Number} > 2)$. The numbers greater than 2 are $3, 4, 5,$ and $6$, so there are $4$ favorable outcomes. Thus, $P(\\text{Number} > 2) = \\frac{4}{6} = \\frac{2}{3}$.",
+          "Final Answer: The probabilities are $P(4) = \\frac{1}{6}$, $P(\\text{Even}) = \\frac{1}{2}$, and $P(\\text{Number} > 2) = \\frac{2}{3}$."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch1-1",
+        "courseId": "proba",
+        "chapterId": "ch1",
+        "title": "Applying Probability Theorems",
+        "difficulty": "medium",
+        "prerequisites": [
+          {
+            "sectionId": "sec1-1",
+            "chapterId": "ch1",
+            "label": "Basic Concepts of Probability"
+          }
+        ],
+        "problem": "Consider a random experiment where a fair six-sided die is rolled twice. Let the following events be defined:\n\n- $A$: The first roll results in an even number.\n- $B$: The second roll results in a number greater than 4.\n- $C$: The sum of the two rolls is 7.\n\nUsing the **axioms of probability** and **theorems on probability** (e.g., addition rule, multiplication rule, conditional probability, and independence), answer the following:\n\n1. Calculate $P(A)$, $P(B)$, and $P(C)$.\n2. Determine whether events $A$ and $B$ are independent.\n3. Compute $P(A \\cup C)$.\n4. Compute $P(C \\mid A)$.\n5. If it is known that the sum of the two rolls is 7, what is the probability that the first roll was a 3? (Hint: Use conditional probability and the definition of $C$.)",
+        "steps": [
+          "Step 1: **Calculate the sample space and individual probabilities.**\n   - The sample space $S$ consists of all ordered pairs $(i, j)$ where $i, j \\in \\{1, 2, 3, 4, 5, 6\\}$. There are $6 \\times 6 = 36$ possible outcomes.\n   - Calculate $P(A)$: Event $A$ occurs if the first roll is 2, 4, or 6. There are $3 \\times 6 = 18$ favorable outcomes. Thus, $P(A) = \\frac{18}{36} = \\frac{1}{2}$.\n   - Calculate $P(B)$: Event $B$ occurs if the second roll is 5 or 6. There are $6 \\times 2 = 12$ favorable outcomes. Thus, $P(B) = \\frac{12}{36} = \\frac{1}{3}$.\n   - Calculate $P(C)$: Event $C$ occurs if the sum is 7, i.e., the pairs $(1,6), (2,5), (3,4), (4,3), (5,2), (6,1)$. There are 6 favorable outcomes. Thus, $P(C) = \\frac{6}{36} = \\frac{1}{6}$.",
+          "Step 2: **Determine independence of $A$ and $B$.**\n   - Events $A$ and $B$ are independent if $P(A \\cap B) = P(A) \\cdot P(B)$.\n   - Calculate $P(A \\cap B)$: Event $A \\cap B$ occurs if the first roll is even **and** the second roll is greater than 4. There are $3 \\times 2 = 6$ favorable outcomes. Thus, $P(A \\cap B) = \\frac{6}{36} = \\frac{1}{6}$.\n   - Compare with $P(A) \\cdot P(B) = \\frac{1}{2} \\times \\frac{1}{3} = \\frac{1}{6}$.\n   - Since $P(A \\cap B) = P(A) \\cdot P(B)$, events $A$ and $B$ are independent.",
+          "Step 3: **Compute $P(A \\cup C)$ using the addition rule.**\n   - The addition rule states: $P(A \\cup C) = P(A) + P(C) - P(A \\cap C)$.\n   - Calculate $P(A \\cap C)$: Event $A \\cap C$ occurs if the first roll is even **and** the sum is 7. The favorable pairs are $(2,5), (4,3), (6,1)$. There are 3 outcomes. Thus, $P(A \\cap C) = \\frac{3}{36} = \\frac{1}{12}$.\n   - Substitute into the addition rule: $P(A \\cup C) = \\frac{1}{2} + \\frac{1}{6} - \\frac{1}{12} = \\frac{6}{12} + \\frac{2}{12} - \\frac{1}{12} = \\frac{7}{12}$.",
+          "Step 4: **Compute $P(C \\mid A)$ using conditional probability.**\n   - The conditional probability formula is: $P(C \\mid A) = \\frac{P(A \\cap C)}{P(A)}$.\n   - From Step 3, $P(A \\cap C) = \\frac{1}{12}$ and $P(A) = \\frac{1}{2}$.\n   - Thus, $P(C \\mid A) = \\frac{\\frac{1}{12}}{\\frac{1}{2}} = \\frac{1}{6}$.",
+          "Step 5: **Compute the conditional probability for the final part.**\n   - We need to find $P(\\text{First roll is 3} \\mid C)$.\n   - By definition, $P(\\text{First roll is 3} \\mid C) = \\frac{P(\\text{First roll is 3} \\cap C)}{P(C)}$.\n   - The only outcome where the first roll is 3 **and** the sum is 7 is $(3,4)$. Thus, $P(\\text{First roll is 3} \\cap C) = \\frac{1}{36}$.\n   - From Step 1, $P(C) = \\frac{1}{6}$.\n   - Thus, $P(\\text{First roll is 3} \\mid C) = \\frac{\\frac{1}{36}}{\\frac{1}{6}} = \\frac{1}{6}$.",
+          "Final Answer: \n   1. $P(A) = \\frac{1}{2}$, $P(B) = \\frac{1}{3}$, $P(C) = \\frac{1}{6}$.\n   2. Events $A$ and $B$ are independent.\n   3. $P(A \\cup C) = \\frac{7}{12}$.\n   4. $P(C \\mid A) = \\frac{1}{6}$.\n   5. The probability that the first roll was a 3, given that the sum is 7, is $\\frac{1}{6}$."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch1-2",
+        "courseId": "proba",
+        "chapterId": "ch1",
+        "title": "Solving Conditional Probability Problems",
+        "difficulty": "hard",
+        "prerequisites": [
+          {
+            "sectionId": "sec1-1",
+            "chapterId": "ch1",
+            "label": "Basic Concepts of Probability"
+          }
+        ],
+        "problem": "Consider a university course with three sections: Section A, Section B, and Section C. The enrollment and pass rates for each section are given as follows:\n\n- **Section A**: 50 students enrolled, 80% pass rate.\n- **Section B**: 30 students enrolled, 70% pass rate.\n- **Section C**: 20 students enrolled, 90% pass rate.\n\nA student is selected at random from the entire course enrollment. \n\n1. What is the probability that the selected student is from Section A **and** passed the course?\n2. If the selected student passed the course, what is the probability that they were from Section A? (Use Bayes' Theorem.)\n3. Are the events \"being from Section A\" and \"passing the course\" independent? Justify your answer mathematically.\n\nUse the following notation:\n- Let $A$, $B$, and $C$ denote the events that the student is from Section A, B, or C, respectively.\n- Let $P$ denote the event that the student passed the course.\n\nProvide all answers in exact form (fractions or decimals).",
+        "steps": [
+          "Step 1: Calculate the total number of students enrolled in the course and the total number of students who passed. Use these to determine $P(A)$, $P(B)$, $P(C)$, $P(P|A)$, $P(P|B)$, and $P(P|C)$.",
+          "Step 2: For part (1), compute $P(A \\cap P)$ using the definition of conditional probability: $P(A \\cap P) = P(A) \\cdot P(P|A)$.",
+          "Step 3: For part (2), use the law of total probability to compute $P(P)$, then apply Bayes' Theorem: $$P(A|P) = \\frac{P(A \\cap P)}{P(P)} = \\frac{P(A) \\cdot P(P|A)}{P(A) \\cdot P(P|A) + P(B) \\cdot P(P|B) + P(C) \\cdot P(P|C)}.$$",
+          "Step 4: For part (3), check for independence by verifying whether $P(A \\cap P) = P(A) \\cdot P(P)$. Compute $P(P)$ using the law of total probability and compare.",
+          "Final Answer: \n1. $P(A \\cap P) = \\frac{40}{100}$ (or 0.4).\n2. $P(A|P) = \\frac{40}{73}$ (or approximately 0.5479).\n3. The events are **not independent** because $P(A \\cap P) \\neq P(A) \\cdot P(P)$."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch2-3",
+        "courseId": "proba",
+        "chapterId": "ch2",
+        "title": "Determining Probability Mass Functions",
+        "difficulty": "easy",
+        "prerequisites": [
+          {
+            "sectionId": "sec2-1",
+            "chapterId": "ch2",
+            "label": "Discrete Random Variables"
+          }
+        ],
+        "problem": "Consider a discrete random variable $X$ representing the outcome of rolling a biased six-sided die. The probabilities for each outcome are given as follows:\n\n$$P(X = 1) = 0.1, \\quad P(X = 2) = 0.2, \\quad P(X = 3) = 0.15, \\quad P(X = 4) = 0.25, \\quad P(X = 5) = 0.1.$$\n\n(a) Determine the probability $P(X = 6)$.\n(b) Write the **probability mass function (PMF)** of $X$ in tabular form.\n(c) Calculate $P(2 \\leq X < 5)$.\n(d) Verify that the given probabilities satisfy the properties of a valid PMF.",
+        "steps": [
+          "Step 1: Recall that the sum of all probabilities in a PMF must equal 1. Use this property to determine $P(X = 6)$ by solving: $$P(X = 6) = 1 - \\sum_{k=1}^{5} P(X = k).$$",
+          "Step 2: Construct the PMF in tabular form by listing all possible values of $X$ alongside their corresponding probabilities. Ensure the table includes $P(X = 6)$ from Step 1.",
+          "Step 3: Calculate $P(2 \\leq X < 5)$ by summing the probabilities of the relevant outcomes: $$P(2 \\leq X < 5) = P(X = 2) + P(X = 3) + P(X = 4).$$",
+          "Step 4: Verify the PMF by checking two key properties:\n  1. Each probability $P(X = k)$ satisfies $0 \\leq P(X = k) \\leq 1$.\n  2. The sum of all probabilities equals 1: $$\\sum_{k=1}^{6} P(X = k) = 1.$$",
+          "Final Answer: \n(a) $P(X = 6) = 0.2$.\n(b) The PMF in tabular form is:\n$$\n\\begin{array}{c|c}\nX & P(X) \\\\\n\\hline\n1 & 0.1 \\\\\n2 & 0.2 \\\\\n3 & 0.15 \\\\\n4 & 0.25 \\\\\n5 & 0.1 \\\\\n6 & 0.2 \\\\\n\\end{array}\n$$\n(c) $P(2 \\leq X < 5) = 0.6$.\n(d) The PMF is valid because all probabilities are non-negative and sum to 1."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch2-4",
+        "courseId": "proba",
+        "chapterId": "ch2",
+        "title": "Analyzing Probability Density Functions",
+        "difficulty": "medium",
+        "prerequisites": [
+          {
+            "sectionId": "sec2-1",
+            "chapterId": "ch2",
+            "label": "Discrete Random Variables"
+          }
+        ],
+        "problem": "Consider a continuous random variable $X$ with the following probability density function (PDF):\n\n$$ f(x) = \\begin{cases}\n\\frac{c}{x^2} & 1 \\leq x \\leq 3 \\\\\n0 & \\text{otherwise}\n\\end{cases} $$\n\n1. **Determine the value of the constant $c$** such that $f(x)$ is a valid probability density function.\n2. **Find the cumulative distribution function (CDF), $F(x)$**, of the random variable $X$.\n3. **Calculate the probability $P(1.5 \\leq X \\leq 2.5)$** using both the PDF and the CDF.\n4. **Compute $P(X > 2)$**.\n5. **Verify that $F(x)$ satisfies the properties of a valid CDF.**",
+        "steps": [
+          "Step 1: **Determine the constant $c$ using the normalization condition for PDFs.** Recall that for a valid PDF, the integral over all possible values of $X$ must equal 1. Set up the integral and solve for $c$:\n\n$$ \\int_{-\\infty}^{\\infty} f(x) \\, dx = \\int_{1}^{3} \\frac{c}{x^2} \\, dx = 1. $$",
+          "Step 2: **Find the cumulative distribution function (CDF), $F(x)$.** The CDF is defined as $F(x) = P(X \\leq x) = \\int_{-\\infty}^{x} f(t) \\, dt$. Compute $F(x)$ for the given PDF, considering the piecewise definition:\n\n$$ F(x) = \\begin{cases}\n0 & x < 1 \\\\\n\\int_{1}^{x} \\frac{c}{t^2} \\, dt & 1 \\leq x \\leq 3 \\\\\n1 & x > 3\n\\end{cases} $$",
+          "Step 3: **Calculate $P(1.5 \\leq X \\leq 2.5)$ using both the PDF and the CDF.**\n- Using the PDF: $P(1.5 \\leq X \\leq 2.5) = \\int_{1.5}^{2.5} f(x) \\, dx$.\n- Using the CDF: $P(1.5 \\leq X \\leq 2.5) = F(2.5) - F(1.5)$. Verify that both methods yield the same result.",
+          "Step 4: **Compute $P(X > 2)$ using the CDF.** Recall that $P(X > 2) = 1 - P(X \\leq 2) = 1 - F(2)$.",
+          "Step 5: **Verify that $F(x)$ satisfies the properties of a valid CDF.** Ensure that:\n- $F(x)$ is non-decreasing.\n- $\\lim_{x \\to -\\infty} F(x) = 0$ and $\\lim_{x \\to \\infty} F(x) = 1$.\n- $F(x)$ is right-continuous.",
+          "Final Answer: Present the values of $c$, $F(x)$, $P(1.5 \\leq X \\leq 2.5)$, and $P(X > 2)$ in a clear and organized manner. Ensure all steps are justified and calculations are shown."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch2-5",
+        "courseId": "proba",
+        "chapterId": "ch2",
+        "title": "Evaluating Joint Distributions and Independence",
+        "difficulty": "hard",
+        "prerequisites": [
+          {
+            "sectionId": "sec2-1",
+            "chapterId": "ch2",
+            "label": "Discrete Random Variables"
+          }
+        ],
+        "problem": "Consider two continuous random variables $X$ and $Y$ with the joint probability density function (pdf) given by:\n\n$$ f(x, y) = \\begin{cases} \n\\frac{c}{x^2 y^3} & \\text{if } 1 \\leq x \\leq 2 \\text{ and } 1 \\leq y \\leq 3 \\\\ \n0 & \\text{otherwise}\n\\end{cases} $$\n\n1. **Determine the constant $c$** such that $f(x, y)$ is a valid joint pdf.\n\n2. **Find the marginal pdfs** of $X$ and $Y$, denoted as $f_X(x)$ and $f_Y(y)$, respectively.\n\n3. **Evaluate independence**: Are $X$ and $Y$ independent random variables? Justify your answer mathematically.\n\n4. **Compute probabilities**: Calculate the following probabilities:\n   - (a) $P(X \\leq 1.5, Y \\geq 2)$\n   - (b) $P(X + Y \\leq 3)$\n   - (c) $P(Y \\leq 2 \\mid X = 1.5)$\n\n5. **Conditional density**: Find the conditional density function $f_{Y \\mid X}(y \\mid x)$ and use it to compute $P(Y \\leq 2 \\mid X = 1.5)$ again to verify your answer in 4(c).",
+        "steps": [
+          "Step 1: **Determine the constant $c$** by ensuring the joint pdf integrates to 1 over the entire support of $X$ and $Y$. Specifically, compute:\n   $$ \\int_{1}^{3} \\int_{1}^{2} \\frac{c}{x^2 y^3} \\, dx \\, dy = 1 $$\n   Solve for $c$.",
+          "Step 2: **Find the marginal pdf of $X$**, $f_X(x)$, by integrating the joint pdf over all possible values of $Y$:\n   $$ f_X(x) = \\int_{1}^{3} f(x, y) \\, dy $$\n   Similarly, find the marginal pdf of $Y$, $f_Y(y)$, by integrating the joint pdf over all possible values of $X$:\n   $$ f_Y(y) = \\int_{1}^{2} f(x, y) \\, dx $$",
+          "Step 3: **Check for independence** by verifying whether the joint pdf factors into the product of the marginal pdfs, i.e., whether $f(x, y) = f_X(x) \\cdot f_Y(y)$ for all $x$ and $y$ in the support. If this holds, $X$ and $Y$ are independent; otherwise, they are dependent.",
+          "Step 4: **Compute $P(X \\leq 1.5, Y \\geq 2)$** by integrating the joint pdf over the region $1 \\leq x \\leq 1.5$ and $2 \\leq y \\leq 3$:\n   $$ P(X \\leq 1.5, Y \\geq 2) = \\int_{2}^{3} \\int_{1}^{1.5} f(x, y) \\, dx \\, dy $$\n   \n   For **$P(X + Y \\leq 3)$**, determine the region of integration where $x + y \\leq 3$, $1 \\leq x \\leq 2$, and $1 \\leq y \\leq 3$, then integrate the joint pdf over this region.",
+          "Step 5: **Compute the conditional probability $P(Y \\leq 2 \\mid X = 1.5)$** using the definition of conditional probability for continuous random variables:\n   $$ P(Y \\leq 2 \\mid X = 1.5) = \\int_{1}^{2} f_{Y \\mid X}(y \\mid 1.5) \\, dy $$\n   where the conditional density is given by:\n   $$ f_{Y \\mid X}(y \\mid x) = \\frac{f(x, y)}{f_X(x)} $$\n   Verify that this matches the result from Step 4(c).",
+          "Final Answer: Provide the values of $c$, the marginal pdfs $f_X(x)$ and $f_Y(y)$, the independence conclusion, the probabilities for 4(a), 4(b), and 4(c), and the conditional density $f_{Y \\mid X}(y \\mid x)$. Ensure all answers are simplified and justified."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch3-6",
+        "courseId": "proba",
+        "chapterId": "ch3",
+        "title": "Calculating Expectation and Variance",
+        "difficulty": "easy",
+        "prerequisites": [
+          {
+            "sectionId": "sec3-1",
+            "chapterId": "ch3",
+            "label": "Expectation of Random Variables"
+          }
+        ],
+        "problem": "Consider a discrete random variable $X$ with the following probability mass function (PMF):\n\n$$\\begin{array}{c|ccc}\nX & -1 & 0 & 2 \\\\\n\\hline\nP(X) & 1/4 & 1/2 & 1/4 \\\\\n\\end{array}$$\n\n(a) Calculate the **expectation** (mean) of $X$, denoted as $E(X)$.\n\n(b) Calculate the **variance** of $X$, denoted as $\\operatorname{Var}(X)$.\n\n(c) What is the **standard deviation** of $X$?",
+        "steps": [
+          "Step 1: Recall the formula for the expectation of a discrete random variable: $E(X) = \\sum x_i P(x_i)$. Compute $E(X)$ using the given PMF.",
+          "Step 2: Compute $E(X^2)$ using the formula $E(X^2) = \\sum x_i^2 P(x_i)$. This will be needed to calculate the variance.",
+          "Step 3: Recall the formula for variance: $\\operatorname{Var}(X) = E(X^2) - [E(X)]^2$. Substitute the values obtained in Steps 1 and 2 to find $\\operatorname{Var}(X)$.",
+          "Step 4: The standard deviation is the square root of the variance. Compute $\\sigma_X = \\sqrt{\\operatorname{Var}(X)}$.",
+          "Final Answer: (a) $E(X) = $ ____, (b) $\\operatorname{Var}(X) = $ ____, (c) $\\sigma_X = $ ____"
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch3-7",
+        "courseId": "proba",
+        "chapterId": "ch3",
+        "title": "Deriving Moment Generating Functions",
+        "difficulty": "medium",
+        "prerequisites": [
+          {
+            "sectionId": "sec3-1",
+            "chapterId": "ch3",
+            "label": "Expectation of Random Variables"
+          }
+        ],
+        "problem": "Consider a discrete random variable $X$ with the following probability mass function (PMF):\n\n$$\\mathbb{P}(X = x) = \\begin{cases}\n\\frac{1}{4} & \\text{if } x = -1, \\\\\n\\frac{1}{2} & \\text{if } x = 0, \\\\\n\\frac{1}{4} & \\text{if } x = 1, \\\\\n0 & \\text{otherwise.}\n\\end{cases}$$\n\n(a) Derive the **moment generating function (MGF)** of $X$, denoted by $M_X(t) = E(e^{tX})$.\n\n(b) Using the MGF derived in part (a), compute the **first four moments** of $X$ about the origin (i.e., $E(X), E(X^2), E(X^3), E(X^4)$).\n\n(c) Verify the results of part (b) by computing the moments directly from the PMF of $X$.",
+        "steps": [
+          "Step 1: Recall the definition of the moment generating function (MGF) for a discrete random variable: $M_X(t) = E(e^{tX}) = \\sum_{x} e^{tx} \\mathbb{P}(X = x)$. Write out the sum explicitly for the given PMF.",
+          "Step 2: Substitute the values of $X$ and their probabilities into the MGF expression. Simplify the resulting expression to obtain $M_X(t)$ in closed form.",
+          "Step 3: To find the moments, recall that the $k$-th moment about the origin is given by $E(X^k) = M_X^{(k)}(0)$, where $M_X^{(k)}(t)$ is the $k$-th derivative of $M_X(t)$ with respect to $t$. Compute the first four derivatives of $M_X(t)$ and evaluate them at $t = 0$.",
+          "Step 4: For verification, compute $E(X), E(X^2), E(X^3),$ and $E(X^4)$ directly from the PMF using the definition $E(X^k) = \\sum_{x} x^k \\mathbb{P}(X = x)$. Compare these results with those obtained from the MGF.",
+          "Final Answer: (a) The moment generating function is $$M_X(t) = \\boxed{\\frac{1}{4} e^{-t} + \\frac{1}{2} + \\frac{1}{4} e^{t}}.$$ (b) The first four moments about the origin are: $$E(X) = \\boxed{0}, \\quad E(X^2) = \\boxed{\\frac{1}{2}}, \\quad E(X^3) = \\boxed{0}, \\quad E(X^4) = \\boxed{\\frac{1}{2}}.$$ (c) The direct computations confirm the results from part (b)."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch3-8",
+        "courseId": "proba",
+        "chapterId": "ch3",
+        "title": "Applying Chebyshev’s Inequality",
+        "difficulty": "hard",
+        "prerequisites": [
+          {
+            "sectionId": "sec3-1",
+            "chapterId": "ch3",
+            "label": "Expectation of Random Variables"
+          }
+        ],
+        "problem": "Consider a sequence of $n$ independent and identically distributed random variables $X_1, X_2, \\ldots, X_n$ where each $X_k$ has the following probability distribution:\n\n$$\\begin{aligned}\nX_k = \\begin{cases}\n1 & \\text{with probability } \\frac{1}{2} \\\\\n2 & \\text{with probability } \\frac{1}{3} \\\\\n-1 & \\text{with probability } \\frac{1}{6}\n\\end{cases}\n\\end{aligned}$$\n\nDefine the sample mean as $\\bar{X}_n = \\frac{1}{n} \\sum_{k=1}^n X_k$.\n\n1. Compute the expected value $E(\\bar{X}_n)$ and the variance $\\operatorname{Var}(\\bar{X}_n)$ of the sample mean.\n2. Using Chebyshev’s Inequality, find the smallest value of $n$ such that the probability $\\mathbb{P}\\left(\\left|\\bar{X}_n - E(\\bar{X}_n)\\right| \\geq 0.1\\right) \\leq 0.05$.\n3. Compare the result obtained in part (2) with the case where each $X_k$ is a Bernoulli random variable with $p = \\frac{1}{2}$ (i.e., $X_k = 1$ with probability $\\frac{1}{2}$ and $X_k = 0$ with probability $\\frac{1}{2}$). Discuss the difference in required sample sizes and explain why this occurs.",
+        "steps": [
+          "Step 1: Compute the expected value $E(X_k)$ and the second moment $E(X_k^2)$ for a single random variable $X_k$. Use these to find $\\operatorname{Var}(X_k)$.",
+          "Step 2: Using the linearity of expectation, compute $E(\\bar{X}_n) = E\\left(\\frac{1}{n} \\sum_{k=1}^n X_k\\right)$. Then, using the independence of the $X_k$'s, compute $\\operatorname{Var}(\\bar{X}_n) = \\frac{1}{n^2} \\sum_{k=1}^n \\operatorname{Var}(X_k)$.",
+          "Step 3: Apply Chebyshev’s Inequality to the sample mean $\\bar{X}_n$: $$\\mathbb{P}\\left(\\left|\\bar{X}_n - E(\\bar{X}_n)\\right| \\geq 0.1\\right) \\leq \\frac{\\operatorname{Var}(\\bar{X}_n)}{0.1^2}.$$ Set this upper bound to be less than or equal to 0.05 and solve for the smallest integer $n$.",
+          "Step 4: Repeat Steps 1-3 for the case where each $X_k$ is a Bernoulli random variable with $p = \\frac{1}{2}$. Compute the required sample size $n$ for the same probability bound.",
+          "Final Answer: Present the smallest value of $n$ for the given distribution and the Bernoulli case. Discuss the difference in sample sizes in terms of the variance of the underlying distributions."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch4-9",
+        "courseId": "proba",
+        "chapterId": "ch4",
+        "title": "Solving Binomial Distribution Problems",
+        "difficulty": "easy",
+        "prerequisites": [
+          {
+            "sectionId": "sec4-1",
+            "chapterId": "ch4",
+            "label": "Binomial and Multinomial Distributions"
+          }
+        ],
+        "problem": "A university student club has a history of 60% of its members passing the annual certification exam on their first attempt. If 8 members are randomly selected, what is the probability that exactly 5 of them pass the exam on their first attempt? \n\nUse the binomial probability formula:\n$$ P(X = k) = \\binom{n}{k} p^k (1-p)^{n-k} $$\nwhere:\n- $n$ is the number of trials,\n- $k$ is the number of successful trials,\n- $p$ is the probability of success on a single trial.",
+        "steps": [
+          "Step 1: Identify the parameters of the binomial distribution from the problem. Here, $n = 8$, $k = 5$, and $p = 0.6$.",
+          "Step 2: Calculate the binomial coefficient $\\binom{n}{k} = \\binom{8}{5}$. Recall that $\\binom{n}{k} = \\frac{n!}{k!(n-k)!}$.",
+          "Step 3: Compute $p^k = (0.6)^5$ and $(1-p)^{n-k} = (0.4)^3$.",
+          "Step 4: Substitute the values into the binomial probability formula: $$ P(X = 5) = \\binom{8}{5} (0.6)^5 (0.4)^3 $$.",
+          "Step 5: Perform the arithmetic calculations to find the final probability.",
+          "Final Answer: The probability that exactly 5 out of 8 members pass the exam is approximately $0.2787$ (or $27.87\\%$)."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch4-10",
+        "courseId": "proba",
+        "chapterId": "ch4",
+        "title": "Modeling with Poisson and Normal Distributions",
+        "difficulty": "medium",
+        "prerequisites": [
+          {
+            "sectionId": "sec4-1",
+            "chapterId": "ch4",
+            "label": "Binomial and Multinomial Distributions"
+          }
+        ],
+        "problem": "### Modeling with Poisson and Normal Distributions\n\nA university campus security team is analyzing the number of emergency calls received per hour at their central dispatch. Historical data suggests that the average number of calls per hour is $\\lambda = 4.5$. Assume the calls follow a Poisson process.\n\n1. **Poisson Distribution**: \n   - Calculate the probability that exactly 6 emergency calls are received in one hour.\n   - Calculate the probability that fewer than 3 emergency calls are received in one hour.\n\n2. **Normal Approximation to Poisson**: \n   - For large $\\lambda$, the Poisson distribution can be approximated by a Normal distribution with mean $\\mu = \\lambda$ and variance $\\sigma^2 = \\lambda$. \n   - Using this approximation, estimate the probability that between 4 and 7 (inclusive) emergency calls are received in one hour. Apply a continuity correction for better accuracy.\n   - Compare this result with the exact probability calculated using the Poisson distribution.\n\n3. **Real-World Context**: \n   - The security team wants to ensure they have enough staff to handle 95% of the call volumes. Using the Normal approximation, determine the maximum number of calls per hour they should prepare for to meet this requirement. Assume $\\lambda = 4.5$ remains valid.\n\nUse the following formulas where necessary:\n- Poisson probability mass function: $$P(X = k) = \\frac{e^{-\\lambda} \\lambda^k}{k!}$$\n- Standard Normal distribution: $$Z = \\frac{X - \\mu}{\\sigma}$$\n- Continuity correction: Adjust $X$ by $\\pm 0.5$ when approximating discrete distributions with the Normal distribution.",
+        "steps": [
+          "Step 1: **Poisson Probability Calculations**\n   - For exactly 6 calls, use the Poisson PMF: $$P(X = 6) = \\frac{e^{-4.5} \\cdot 4.5^6}{6!}$$. Compute this value.\n   - For fewer than 3 calls, calculate $$P(X < 3) = P(X = 0) + P(X = 1) + P(X = 2)$$ using the Poisson PMF for each term.",
+          "Step 2: **Normal Approximation with Continuity Correction**\n   - Approximate the Poisson distribution with a Normal distribution: $\\mu = 4.5$, $\\sigma = \\sqrt{4.5}$.\n   - For the range 4 to 7 (inclusive), apply the continuity correction: $$P(3.5 < X < 7.5)$$. \n   - Convert to the standard Normal distribution: $$Z_1 = \\frac{3.5 - 4.5}{\\sqrt{4.5}}$$ and $$Z_2 = \\frac{7.5 - 4.5}{\\sqrt{4.5}}$$. \n   - Use standard Normal tables or a calculator to find $$P(Z_1 < Z < Z_2)$$.",
+          "Step 3: **Exact Poisson Probability for Comparison**\n   - Calculate the exact Poisson probability for the range 4 to 7 (inclusive): $$P(4 \\leq X \\leq 7) = P(X = 4) + P(X = 5) + P(X = 6) + P(X = 7)$$. \n   - Compare this result with the Normal approximation from Step 2.",
+          "Step 4: **Determine Call Volume for 95% Coverage**\n   - Using the Normal approximation, find the value $X$ such that $$P(X \\leq x) = 0.95$$. \n   - Convert to the standard Normal distribution: $$Z = \\frac{x + 0.5 - 4.5}{\\sqrt{4.5}}$$, where $x + 0.5$ accounts for the continuity correction.\n   - Use the inverse standard Normal table to find the corresponding $Z$ value for 0.95 (approximately 1.645). Solve for $x$.",
+          "Final Answer: \n   - Probability of exactly 6 calls: $P(X = 6) = \\text{[value]}$.\n   - Probability of fewer than 3 calls: $P(X < 3) = \\text{[value]}$.\n   - Normal approximation for 4 to 7 calls: $P(4 \\leq X \\leq 7) \\approx \\text{[value]}$.\n   - Exact Poisson probability for 4 to 7 calls: $P(4 \\leq X \\leq 7) = \\text{[value]}$.\n   - Maximum calls for 95% coverage: $x = \\text{[value]}$ (round to the nearest integer)."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch4-11",
+        "courseId": "proba",
+        "chapterId": "ch4",
+        "title": "Comparing Distributions in Real-World Scenarios",
+        "difficulty": "hard",
+        "prerequisites": [
+          {
+            "sectionId": "sec4-1",
+            "chapterId": "ch4",
+            "label": "Binomial and Multinomial Distributions"
+          }
+        ],
+        "problem": "### Comparing Distributions in Real-World Scenarios\n\nA manufacturing company produces metal rods of a specified length. Due to imperfections in the production process, the actual lengths of the rods vary. The company has two production lines, **Line A** and **Line B**, each following a different probability distribution for the lengths of the rods they produce. Historical data suggests the following:\n\n- **Line A** produces rods with lengths that follow a **normal distribution** with mean $\\mu_A = 100$ mm and standard deviation $\\sigma_A = 2$ mm.\n- **Line B** produces rods with lengths that follow a **uniform distribution** over the interval $[95, 105]$ mm.\n\nThe company wants to compare the two production lines based on the following criteria:\n\n1. **Probability of producing a rod within $\\pm 1$ mm of the target length (100 mm)**.\n2. **Probability of producing a rod shorter than 98 mm or longer than 102 mm**.\n3. **The 90th percentile of the rod lengths for each production line** (i.e., the length below which 90% of the rods fall).\n\nAssume that the target length for the rods is 100 mm, and all rods outside the range $[95, 105]$ mm are discarded.\n\n**Tasks:**\n1. Calculate the probabilities in (1) and (2) for both production lines.\n2. Determine the 90th percentile for the rod lengths from each production line.\n3. Based on your calculations, discuss which production line is more consistent with the target length and which one produces fewer defective rods (i.e., rods outside the range $[98, 102]$ mm). Provide a brief justification for your conclusions.\n\nUse the following standard normal distribution table for calculations involving the normal distribution:\n\n| $z$  | 0.00 | 0.01 | 0.02 | 0.03 | 0.04 | 0.05 |\n|------|------|------|------|------|------|------|\n| 1.6  | 0.9452 | 0.9463 | 0.9474 | 0.9484 | 0.9495 | 0.9505 |\n| 1.7  | 0.9554 | 0.9564 | 0.9573 | 0.9582 | 0.9591 | 0.9599 |\n| 1.8  | 0.9641 | 0.9649 | 0.9656 | 0.9664 | 0.9671 | 0.9678 |\n| 1.9  | 0.9713 | 0.9719 | 0.9726 | 0.9732 | 0.9738 | 0.9744 |\n| 2.0  | 0.9772 | 0.9778 | 0.9783 | 0.9788 | 0.9793 | 0.9798 |\n\nFor the uniform distribution, recall that the probability density function (PDF) is given by:\n$$ f(x) = \\begin{cases}\n\\frac{1}{b-a} & \\text{for } a \\leq x \\leq b, \\\\\n0 & \\text{otherwise.}\n\\end{cases} $$\n\n",
+        "steps": [
+          "Step 1: **Calculate the probability of producing a rod within $\\pm 1$ mm of the target length (100 mm) for Line A (Normal Distribution).**\n\n- The target range is $[99, 101]$ mm.\n- Convert the values to the standard normal distribution using $z = \\frac{X - \\mu_A}{\\sigma_A}$.\n- For $X = 99$: $z = \\frac{99 - 100}{2} = -0.5$.\n- For $X = 101$: $z = \\frac{101 - 100}{2} = 0.5$.\n- Use the standard normal table to find $P(-0.5 \\leq Z \\leq 0.5)$.\n- $P(Z \\leq 0.5) = 0.6915$ and $P(Z \\leq -0.5) = 0.3085$.\n- Thus, $P(-0.5 \\leq Z \\leq 0.5) = 0.6915 - 0.3085 = 0.3830$.\n- **Probability for Line A:** $0.3830$.",
+          "Step 2: **Calculate the probability of producing a rod within $\\pm 1$ mm of the target length (100 mm) for Line B (Uniform Distribution).**\n\n- The target range is $[99, 101]$ mm.\n- The uniform distribution is defined over $[95, 105]$ mm, so the PDF is $f(x) = \\frac{1}{105 - 95} = \\frac{1}{10}$.\n- The probability is the integral of the PDF over $[99, 101]$:\n  $$ P(99 \\leq X \\leq 101) = \\int_{99}^{101} \\frac{1}{10} \\, dx = \\frac{101 - 99}{10} = 0.2. $$\n- **Probability for Line B:** $0.2$.",
+          "Step 3: **Calculate the probability of producing a rod shorter than 98 mm or longer than 102 mm for both lines.**\n\n- **For Line A (Normal Distribution):**\n  - Convert $X = 98$ and $X = 102$ to $z$-scores:\n    $z_{98} = \\frac{98 - 100}{2} = -1$, $z_{102} = \\frac{102 - 100}{2} = 1$.\n  - $P(X < 98 \\text{ or } X > 102) = P(Z < -1) + P(Z > 1) = 2 \\cdot P(Z < -1) = 2 \\cdot 0.1587 = 0.3174$.\n\n- **For Line B (Uniform Distribution):**\n  - The probability is the sum of the probabilities for $X < 98$ and $X > 102$:\n    $$ P(X < 98) = \\int_{95}^{98} \\frac{1}{10} \\, dx = \\frac{98 - 95}{10} = 0.3, $$\n    $$ P(X > 102) = \\int_{102}^{105} \\frac{1}{10} \\, dx = \\frac{105 - 102}{10} = 0.3. $$\n  - Total probability: $0.3 + 0.3 = 0.6$.\n- **Probability for Line A:** $0.3174$.\n- **Probability for Line B:** $0.6$.",
+          "Step 4: **Determine the 90th percentile of the rod lengths for each production line.**\n\n- **For Line A (Normal Distribution):**\n  - Find the $z$-score corresponding to the 90th percentile. From the standard normal table, $P(Z \\leq 1.28) \\approx 0.8997$ and $P(Z \\leq 1.29) \\approx 0.9015$. Interpolate to get $z \\approx 1.282$.\n  - Convert the $z$-score to the original scale: $X = \\mu_A + z \\cdot \\sigma_A = 100 + 1.282 \\cdot 2 = 102.564$ mm.\n\n- **For Line B (Uniform Distribution):**\n  - The CDF of the uniform distribution is $F(x) = \\frac{x - a}{b - a}$ for $a \\leq x \\leq b$.\n  - Set $F(x) = 0.9$ and solve for $x$:\n    $$ 0.9 = \\frac{x - 95}{10} \\implies x = 95 + 0.9 \\cdot 10 = 104 \text{ mm}. $$\n- **90th percentile for Line A:** $102.564$ mm.\n- **90th percentile for Line B:** $104$ mm.",
+          "Step 5: **Compare the two production lines based on the calculated probabilities and percentiles.**\n\n- **Consistency with Target Length:** Line A has a higher probability ($0.3830$) of producing rods within $\\pm 1$ mm of the target length compared to Line B ($0.2$). This suggests Line A is more consistent.\n- **Defective Rods:** Line A also has a lower probability ($0.3174$) of producing rods outside the range $[98, 102]$ mm compared to Line B ($0.6$). Thus, Line A produces fewer defective rods.\n- **90th Percentile:** The 90th percentile for Line A ($102.564$ mm) is closer to the target length than that of Line B ($104$ mm), further indicating Line A's superiority in meeting the target.",
+          "Final Answer: \n\n1. **Probabilities:**\n   - Line A: $P(99 \\leq X \\leq 101) = 0.3830$, $P(X < 98 \\text{ or } X > 102) = 0.3174$.\n   - Line B: $P(99 \\leq X \\leq 101) = 0.2$, $P(X < 98 \\text{ or } X > 102) = 0.6$.\n\n2. **90th Percentiles:**\n   - Line A: $102.564$ mm.\n   - Line B: $104$ mm.\n\n3. **Conclusion:** Line A is more consistent with the target length and produces fewer defective rods compared to Line B."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch5-12",
+        "courseId": "proba",
+        "chapterId": "ch5",
+        "title": "Constructing Confidence Intervals",
+        "difficulty": "easy",
+        "prerequisites": [
+          {
+            "sectionId": "sec5-1",
+            "chapterId": "ch5",
+            "label": "Sampling Theory and Distributions"
+          }
+        ],
+        "problem": "A random sample of 10 students' scores on a statistics exam is given below:\n\n$$ 91, 77, 61, 52, 17, 49, 72, 16, 91, 15 $$\n\nAssume the population standard deviation is known to be $\\sigma = 25$. Construct a 95% confidence interval for the true mean score of the population. Use the standard normal distribution ($$Z$$-distribution) for your calculations.",
+        "steps": [
+          "Step 1: Identify the given information: sample size ($$n$$), sample mean ($$\\bar{x}$$), population standard deviation ($$\\sigma$$), and confidence level (95%).",
+          "Step 2: Calculate the sample mean ($$\\bar{x}$$) using the provided data: $$ \\bar{x} = \\frac{\\sum x_i}{n} $$.",
+          "Step 3: Determine the critical value ($$Z_{\\alpha/2}$$) for a 95% confidence level from the standard normal distribution table. Note that $$\\alpha = 1 - 0.95 = 0.05$$.",
+          "Step 4: Calculate the standard error of the mean ($$SE$$) using the formula: $$ SE = \\frac{\\sigma}{\\sqrt{n}} $$.",
+          "Step 5: Compute the margin of error ($$E$$) using the formula: $$ E = Z_{\\alpha/2} \\cdot SE $$.",
+          "Final Answer: Construct the confidence interval using the formula: $$ (\\bar{x} - E, \\bar{x} + E) $$. Present the final interval in the form $$ \\bar{x} \\pm E $$."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch5-13",
+        "courseId": "proba",
+        "chapterId": "ch5",
+        "title": "Performing Hypothesis Tests",
+        "difficulty": "medium",
+        "prerequisites": [
+          {
+            "sectionId": "sec5-1",
+            "chapterId": "ch5",
+            "label": "Sampling Theory and Distributions"
+          }
+        ],
+        "problem": "A company claims that the average lifetime of its batteries is at least 500 hours. To test this claim, a consumer group randomly selects 20 batteries and measures their lifetimes. The recorded lifetimes (in hours) are given below:\n\n$$\\begin{array}{cccccccccc}\n491 & 591 & 216 & 319 & 157 & 773 & 316 & 071 & 052 & 290 \\\n910 & 971 & 748 & 029 & 414 & 878 & 432 & 819 & 527 & 279 \\\n\\end{array}$$\n\nAssume the battery lifetimes are normally distributed with a known standard deviation of $\\sigma = 150$ hours.\n\n1. State the null and alternative hypotheses for this test.\n2. Perform a hypothesis test at a 5% significance level to determine whether there is sufficient evidence to reject the company's claim.\n3. Calculate the $p$-value for this test and interpret its meaning.\n4. Construct a 95% confidence interval for the true mean battery lifetime and discuss how it relates to the hypothesis test.",
+        "steps": [
+          "Step 1: **State the hypotheses.** \n   - The null hypothesis ($H_0$) assumes the company's claim is true: $\\mu \\geq 500$ hours.\n   - The alternative hypothesis ($H_1$) challenges the claim: $\\mu < 500$ hours. This is a one-tailed test because we are testing if the mean is *less than* 500 hours.",
+          "Step 2: **Calculate the sample mean.** \n   - Compute the mean ($\\bar{x}$) of the given data. The sample mean is:\n     $$\\bar{x} = \\frac{1}{20} \\sum_{i=1}^{20} x_i = \\frac{491 + 591 + \\dots + 279}{20} = 460.55 \\text{ hours}.$$",
+          "Step 3: **Compute the test statistic.** \n   - Use the $z$-test statistic for a known population standard deviation:\n     $$z = \\frac{\\bar{x} - \\mu_0}{\\sigma / \\sqrt{n}} = \\frac{460.55 - 500}{150 / \\sqrt{20}} = \\frac{-39.45}{33.54} = -1.18.$$",
+          "Step 4: **Determine the critical value and make a decision.** \n   - For a one-tailed test at a 5% significance level ($\\alpha = 0.05$), the critical $z$-value is $-1.645$.\n   - Since $-1.18 > -1.645$, we *fail to reject* the null hypothesis. There is not sufficient evidence to refute the company's claim.",
+          "Step 5: **Calculate the $p$-value.** \n   - The $p$-value is the probability of observing a test statistic as extreme as $-1.18$ under $H_0$:\n     $$p\\text{-value} = P(Z < -1.18) = 0.1190.$$ \n   - Since $0.1190 > 0.05$, this confirms our decision to fail to reject $H_0$.",
+          "Final Answer: **Construct the 95% confidence interval.** \n   - The 95% confidence interval for $\\mu$ is:\n     $$\\bar{x} \\pm z_{\\alpha/2} \\cdot \\frac{\\sigma}{\\sqrt{n}} = 460.55 \\pm 1.96 \\cdot \\frac{150}{\\sqrt{20}} = 460.55 \\pm 65.74 = (394.81, 526.29).$$\n   - Since $500$ lies within this interval, it supports the decision to fail to reject $H_0$. The data does not provide strong evidence against the company's claim."
+        ],
+        "solved": false
+      },
+      {
+        "id": "ex-proba-ch5-14",
+        "courseId": "proba",
+        "chapterId": "ch5",
+        "title": "Applying Nonparametric Statistical Tests",
+        "difficulty": "hard",
+        "prerequisites": [
+          {
+            "sectionId": "sec5-1",
+            "chapterId": "ch5",
+            "label": "Sampling Theory and Distributions"
+          }
+        ],
+        "problem": "Consider the following two independent samples of exam scores from two different teaching methods, Method A and Method B, applied to randomly selected students. The data represent the scores out of 100.\n\n**Method A Scores:**\n$$ 78, 85, 92, 88, 76, 95, 89, 84, 91, 87 $$\n\n**Method B Scores:**\n$$ 82, 79, 88, 90, 85, 77, 83, 94, 81, 86, 75, 93 $$\n\nYou are tasked with determining whether there is a statistically significant difference in the central tendency (e.g., medians) of the scores between the two teaching methods. Since the sample sizes are small and the normality of the populations is not guaranteed, a nonparametric test is appropriate.\n\n1. State the null and alternative hypotheses for this test.\n2. Choose and justify an appropriate nonparametric test for this scenario.\n3. Calculate the test statistic manually using the chosen test.\n4. Determine the critical value or $p$-value for the test at a significance level of $\\alpha = 0.05$.\n5. State your conclusion in the context of the problem.",
+        "steps": [
+          "Step 1: **State the Hypotheses**\n   - Null Hypothesis ($H_0$): The median scores of Method A and Method B are equal, i.e., there is no difference in the central tendency of the two teaching methods.\n   - Alternative Hypothesis ($H_1$): The median scores of Method A and Method B are not equal, i.e., there is a difference in the central tendency of the two teaching methods (two-tailed test).",
+          "Step 2: **Choose and Justify the Nonparametric Test**\n   - Since the samples are independent, small, and normality is not assured, the **Mann-Whitney U test** (also known as the Wilcoxon rank-sum test) is appropriate. This test compares the distributions of two independent samples to assess whether one tends to have larger values than the other.",
+          "Step 3: **Calculate the Test Statistic**\n   - Combine the two samples and rank all the scores from smallest to largest. Assign average ranks in case of ties.\n   - Calculate the sum of ranks for each sample, $R_A$ and $R_B$.\n   - Compute the U statistic for each sample using:\n     $$ U_A = n_A n_B + \\frac{n_A(n_A + 1)}{2} - R_A $$\n     $$ U_B = n_A n_B + \\frac{n_B(n_B + 1)}{2} - R_B $$\n   - The test statistic $U$ is the smaller of $U_A$ and $U_B$.",
+          "Step 4: **Determine the Critical Value or $p$-value**\n   - For small samples ($n_A = 10$, $n_B = 12$), use the Mann-Whitney U distribution table to find the critical value at $\\alpha = 0.05$ for a two-tailed test.\n   - Alternatively, calculate the $p$-value using statistical software or normal approximation if the sample sizes are large enough (though not strictly necessary here).\n   - Compare the test statistic $U$ to the critical value or use the $p$-value to decide whether to reject $H_0$.",
+          "Step 5: **Perform the Calculations**\n   - Combine and rank the scores:\n     $$ 75(1), 76(2), 77(3), 78(4), 79(5), 81(6), 82(7), 83(8), 84(9), 85(10.5), 85(10.5), 86(12), 87(13), 88(14.5), 88(14.5), 89(16), 90(17), 91(18), 92(19), 93(20), 94(21), 95(22) $$\n   - Sum of ranks for Method A ($R_A$): $4 + 10.5 + 18 + 14.5 + 2 + 22 + 16 + 9 + 19 + 13 = 128$.\n   - Sum of ranks for Method B ($R_B$): $1 + 3 + 7 + 17 + 10.5 + 5 + 8 + 21 + 6 + 12 + 20 + 14.5 = 125$.\n   - Calculate $U_A$ and $U_B$:\n     $$ U_A = 10 \\cdot 12 + \\frac{10 \\cdot 11}{2} - 128 = 120 + 55 - 128 = 47 $$\n     $$ U_B = 10 \\cdot 12 + \\frac{12 \\cdot 13}{2} - 125 = 120 + 78 - 125 = 73 $$\n   - The test statistic $U = \\min(U_A, U_B) = 47$.",
+          "Final Answer: **Conclusion**\n   - The critical value for $U$ at $\\alpha = 0.05$ (two-tailed) with $n_A = 10$ and $n_B = 12$ is **29** (from Mann-Whitney U tables).\n   - Since $U = 47$ is greater than the critical value of 29, we **fail to reject the null hypothesis**.\n   - There is **no statistically significant evidence** at the 0.05 level to conclude that the median scores of the two teaching methods differ."
+        ],
+        "solved": false
+      }
+    ]
+  }
+}

@@ -1,6 +1,9 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { courses } from '#/data/timetable'
+import { courses as hardcodedCourses } from '#/data/timetable'
+import type { Course } from '#/data/timetable'
 import { courseContents } from '#/data/courses'
+import { getCourseData } from '#/api/get-course-data'
+import { getAllCoursesList } from '#/api/get-all-courses'
 import { CourseMaterial } from '#/components/CourseMaterial'
 import { ExerciseSection } from '#/components/ExerciseSection'
 
@@ -16,16 +19,35 @@ export const Route = createFileRoute('/course/$courseId')({
     chapter: search.chapter as string | undefined,
     section: search.section as string | undefined,
   }),
+  loader: async ({ params }) => {
+    const { courseId } = params
+    // If it's a hardcoded course we already have everything; skip the server call
+    if (courseContents[courseId] && hardcodedCourses.find((c: Course) => c.id === courseId)) {
+      return { generatedContent: null, generatedMeta: null }
+    }
+    // Otherwise fetch from the generated course store
+    const [content, allCourses] = await Promise.all([
+      getCourseData({ data: courseId }),
+      getAllCoursesList(),
+    ])
+    const meta = allCourses.find((c: Course) => c.id === courseId) ?? null
+    return { generatedContent: content, generatedMeta: meta }
+  },
   component: CoursePage,
 })
 
 function CoursePage() {
   const { courseId } = Route.useParams()
   const { tab, chapter, section } = Route.useSearch()
+  const { generatedContent, generatedMeta } = Route.useLoaderData()
   const navigate = useNavigate()
 
-  const course = courses.find((c) => c.id === courseId)
-  const content = courseContents[courseId]
+  const course =
+    hardcodedCourses.find((c) => c.id === courseId) ??
+    generatedMeta ??
+    null
+
+  const content = courseContents[courseId] ?? generatedContent
 
   if (!course || !content) {
     return (

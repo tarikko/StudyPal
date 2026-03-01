@@ -29,6 +29,20 @@ export default function Header() {
             >
               Dashboard
             </Link>
+            <Link
+              to="/timetable"
+              className="nav-link"
+              activeProps={{ className: 'nav-link is-active' }}
+            >
+              Timetable
+            </Link>
+            <Link
+              to="/upload"
+              className="nav-link"
+              activeProps={{ className: 'nav-link is-active' }}
+            >
+              Upload
+            </Link>
           </div>
 
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
@@ -80,6 +94,22 @@ export default function Header() {
             onClick={() => setDrawerOpen(false)}
           >
             📊 Dashboard
+          </Link>
+          <Link
+            to="/timetable"
+            className="rounded-lg px-4 py-3 text-sm font-semibold text-[var(--sea-ink-soft)] no-underline transition-colors hover:bg-white/60 hover:text-[var(--sea-ink)]"
+            activeProps={{ className: 'rounded-lg px-4 py-3 text-sm font-semibold bg-[var(--lagoon)]/15 text-[var(--lagoon-deep)] no-underline' }}
+            onClick={() => setDrawerOpen(false)}
+          >
+            📅 Timetable
+          </Link>
+          <Link
+            to="/upload"
+            className="rounded-lg px-4 py-3 text-sm font-semibold text-[var(--sea-ink-soft)] no-underline transition-colors hover:bg-white/60 hover:text-[var(--sea-ink)]"
+            activeProps={{ className: 'rounded-lg px-4 py-3 text-sm font-semibold bg-[var(--lagoon)]/15 text-[var(--lagoon-deep)] no-underline' }}
+            onClick={() => setDrawerOpen(false)}
+          >
+            📤 Upload
           </Link>
         </nav>
       </div>

@@ -101,6 +101,29 @@ export function getNextSessionDay(entry: TimetableEntry, now: Date = new Date())
   return getDayName(entry.day)
 }
 
+export function getUpcomingSessions(n: number = 5, now: Date = new Date()): TimetableEntry[] {
+  const day = now.getDay()
+  const nowMinutes = toMinutes(now.getHours(), now.getMinutes())
+  const results: TimetableEntry[] = []
+
+  // Remaining sessions today
+  const todayRemaining = timetable
+    .filter((e) => e.day === day && toMinutes(e.startHour, e.startMinute) > nowMinutes)
+    .sort((a, b) => toMinutes(a.startHour, a.startMinute) - toMinutes(b.startHour, b.startMinute))
+  results.push(...todayRemaining)
+
+  // Future days in order
+  for (let offset = 1; offset <= 7 && results.length < n; offset++) {
+    const checkDay = (day + offset) % 7
+    const dayEntries = timetable
+      .filter((e) => e.day === checkDay)
+      .sort((a, b) => toMinutes(a.startHour, a.startMinute) - toMinutes(b.startHour, b.startMinute))
+    results.push(...dayEntries)
+  }
+
+  return results.slice(0, n)
+}
+
 export function getTomorrowSessions(now: Date = new Date()): TimetableEntry[] {
   const tomorrow = (now.getDay() + 1) % 7
   return timetable
