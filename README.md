@@ -57,8 +57,19 @@ The timetable engine tracks lectures, tutorials, and labs across the week. It po
 ### 🔖 Progress Checkpoints
 As you read through material, StudyPal saves your position per course. Pick up exactly where you left off, whether you're between classes or coming back the next day.
 
-### 🤖 AI Integration
-Built-in support for multiple AI providers via **TanStack AI** — use Claude, Gemini, OpenAI, or a local Ollama model to get instant explanations, hints, and feedback while you study.
+### 🤖 Mistral AI — Intelligent Exercise Verification
+StudyPal was built for the **Mistral AI Global Hackathon 2026** and uses **Mistral Large** as its AI brain for exercise verification. What makes the integration creative is how it goes far beyond a simple chat wrapper:
+
+- **Text solution grading** — paste any typed solution and Mistral Large reads the exercise context (title + full problem statement) alongside a rich system prompt that instructs it to act as a university tutor, identify exactly where errors occur, and return a concise verdict (✅ Correct / ⚠️ Partially Correct / ❌ Incorrect) with encouraging feedback.
+- **Handwritten photo grading** — using the browser's `capture="environment"` camera API, students can snap a picture of their copybook directly on mobile. The image is encoded to base64 and sent as a multimodal message; Mistral's vision capabilities then read and grade the handwritten work just like typed text.
+- **Streaming responses** — results stream back token-by-token via Server-Sent Events (TanStack AI + TanStack Start server functions), rendered live with `Streamdown` so feedback appears instantly rather than waiting for the full response.
+- **OpenAI-compatible adapter** — Mistral's API is consumed through TanStack AI's `openaiText` adapter pointed at `https://api.mistral.ai/v1`, keeping the integration thin and swappable.
+
+To enable AI verification, add your key to `.env`:
+
+```env
+MISTRAL_API_KEY=your_mistral_api_key
+```
 
 ### 🌗 Dark / Light Theme
 A polished lagoon-inspired design system with a one-click theme toggle for comfortable day and night studying.
@@ -74,7 +85,7 @@ A polished lagoon-inspired design system with a one-click theme toggle for comfo
 | Server State | [TanStack Query](https://tanstack.com/query) |
 | Client State | [TanStack Store](https://tanstack.com/store) |
 | Database / Collections | [TanStack DB](https://tanstack.com/db) |
-| AI | [TanStack AI](https://tanstack.com/ai) (Claude, Gemini, OpenAI, Ollama) |
+| AI | [Mistral Large](https://mistral.ai) via [TanStack AI](https://tanstack.com/ai) OpenAI-compatible adapter |
 | Styling | [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) |
 | Icons | [Lucide React](https://lucide.dev) |
 | Testing | [Vitest](https://vitest.dev) + [Testing Library](https://testing-library.com) |
@@ -101,15 +112,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### AI features (optional)
 
-Create a `.env` file in the project root and add the API key(s) for the provider(s) you want to use:
+Create a `.env` file in the project root and add your Mistral API key to enable exercise verification:
 
 ```env
-ANTHROPIC_API_KEY=your_anthropic_api_key
-OPENAI_API_KEY=your_openai_api_key
-GEMINI_API_KEY=your_gemini_api_key
+MISTRAL_API_KEY=your_mistral_api_key
 ```
 
-For local inference, start an [Ollama](https://ollama.com) server — no API key required.
+No key? You can still use the full platform — AI verification is an opt-in overlay on each exercise.
 
 ---
 
@@ -156,6 +165,30 @@ src/
 │   └── course.$courseId.tsx  # Per-course material + exercises
 └── styles.css            # Global Tailwind + design-token overrides
 ```
+
+---
+
+## 🗺 Roadmap
+
+The features below are planned for upcoming releases:
+
+### 📝 In-App Course Editor
+A fully fledged rich-text + Markdown editor built into every course page, letting instructors and students add, rearrange, and publish sections without touching source files. Supports LaTeX, code blocks, callouts, and image embeds.
+
+### 📸 Copybook → Beautiful Notes
+Point your camera at any page of your handwritten notes, select the target course section, and StudyPal will use Mistral's vision API to transcribe and reformat your handwriting into clean, structured Markdown — complete with headings, bullet points, and LaTeX math — and append it directly to the chosen section.
+
+### 📊 Native JS Charts
+Embed live, interactive charts directly inside course material using a JavaScript-native charting library (e.g. Chart.js or Observable Plot). Write a simple JSON data block in a section and StudyPal renders it as a bar chart, line graph, or scatter plot — ideal for visualising data sets, algorithm performance curves, or thermodynamic cycles.
+
+### ⚙️ Rich Settings Panel
+A comprehensive settings screen covering: preferred AI model, default exercise difficulty filter, theme customisation (accent colour, font size), notification preferences for upcoming sessions, and keyboard shortcuts.
+
+### 🔗 Google Workspace Integration
+Connect StudyPal to your Google account to:
+- **Import** lecture slides and Docs as course sections automatically
+- **Sync** your timetable with Google Calendar (two-way)
+- **Export** solved exercises and notes to Google Drive as formatted PDFs
 
 ---
 
