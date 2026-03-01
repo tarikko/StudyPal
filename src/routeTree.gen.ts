@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BrainNourishmentRouteImport } from './routes/brain-nourishment'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CourseCourseIdRouteImport } from './routes/course.$courseId'
 
+const BrainNourishmentRoute = BrainNourishmentRouteImport.update({
+  id: '/brain-nourishment',
+  path: '/brain-nourishment',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -25,32 +31,43 @@ const CourseCourseIdRoute = CourseCourseIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/brain-nourishment': typeof BrainNourishmentRoute
   '/course/$courseId': typeof CourseCourseIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/brain-nourishment': typeof BrainNourishmentRoute
   '/course/$courseId': typeof CourseCourseIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/brain-nourishment': typeof BrainNourishmentRoute
   '/course/$courseId': typeof CourseCourseIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/course/$courseId'
+  fullPaths: '/' | '/brain-nourishment' | '/course/$courseId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/course/$courseId'
-  id: '__root__' | '/' | '/course/$courseId'
+  to: '/' | '/brain-nourishment' | '/course/$courseId'
+  id: '__root__' | '/' | '/brain-nourishment' | '/course/$courseId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BrainNourishmentRoute: typeof BrainNourishmentRoute
   CourseCourseIdRoute: typeof CourseCourseIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/brain-nourishment': {
+      id: '/brain-nourishment'
+      path: '/brain-nourishment'
+      fullPath: '/brain-nourishment'
+      preLoaderRoute: typeof BrainNourishmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BrainNourishmentRoute: BrainNourishmentRoute,
   CourseCourseIdRoute: CourseCourseIdRoute,
 }
 export const routeTree = rootRouteImport
