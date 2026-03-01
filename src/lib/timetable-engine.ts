@@ -1,6 +1,7 @@
 import { timetable, courses } from '#/data/timetable'
 import type { TimetableEntry, Course } from '#/data/timetable'
 import { courseContents } from '#/data/courses'
+import { getCheckpoint } from '#/lib/checkpoint-store'
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -73,25 +74,51 @@ export function getUnsolvedExercises(): { courseId: string; courseName: string; 
   }).filter((c) => c.count > 0)
 }
 
-export function getMagicDestination(now: Date = new Date()): { path: string; label: string } {
+export interface MagicDestination {
+  label: string
+  to: '/' | '/course/$courseId'
+  params?: { courseId: string }
+  search?: { tab?: 'material' | 'exercises'; chapter?: string; section?: string }
+}
+
+export function getMagicDestination(now: Date = new Date()): MagicDestination {
   const current = getCurrentSession(now)
   if (current) {
-    // During a session, go to the course page exercises tab
+    const checkpoint = getCheckpoint(current.courseId)
+    if (checkpoint) {
+      return {
+        to: '/course/$courseId',
+        params: { courseId: current.courseId },
+        search: { tab: 'material', chapter: checkpoint.chapterId, section: checkpoint.sectionId },
+        label: `Resume ${current.courseName} from checkpoint`,
+      }
+    }
     return {
-      path: `/course/${current.courseId}`,
+      to: '/course/$courseId',
+      params: { courseId: current.courseId },
       label: `Go to ${current.courseName} exercises`,
     }
   }
 
   const next = getNextSession(now)
   if (next) {
+    const checkpoint = getCheckpoint(next.courseId)
+    if (checkpoint) {
+      return {
+        to: '/course/$courseId',
+        params: { courseId: next.courseId },
+        search: { tab: 'material', chapter: checkpoint.chapterId, section: checkpoint.sectionId },
+        label: `Prepare for ${next.courseName} from checkpoint`,
+      }
+    }
     return {
-      path: `/course/${next.courseId}`,
+      to: '/course/$courseId',
+      params: { courseId: next.courseId },
       label: `Prepare for ${next.courseName}`,
     }
   }
 
-  return { path: '/', label: 'No upcoming sessions' }
+  return { to: '/', label: 'No upcoming sessions' }
 }
 
 export function getNextSessionDay(entry: TimetableEntry, now: Date = new Date()): string {
