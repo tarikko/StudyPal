@@ -3,6 +3,7 @@ import { Streamdown } from "streamdown";
 import type { CourseContent } from "#/data/courses";
 import { ChapterSidebar } from "./ChapterSidebar";
 import { remarkPlugins, rehypePlugins } from "#/lib/markdown-config";
+import { getCheckpoint, setCheckpoint, clearCheckpoint } from "#/lib/checkpoint-store";
 
 interface CourseMaterialProps {
 	content: CourseContent;
@@ -25,8 +26,22 @@ export function CourseMaterial({
 		initialSectionId ?? firstSection?.id ?? ""
 	);
 	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const [checkpoint, setCheckpointState] = useState(() =>
+		getCheckpoint(content.courseId)
+	);
 
 	const contentRef = useRef<HTMLDivElement>(null);
+
+	const handleSetCheckpoint = useCallback(() => {
+		const cp = { courseId: content.courseId, chapterId: activeChapterId, sectionId: activeSectionId };
+		setCheckpoint(cp);
+		setCheckpointState(cp);
+	}, [content.courseId, activeChapterId, activeSectionId]);
+
+	const handleClearCheckpoint = useCallback(() => {
+		clearCheckpoint(content.courseId);
+		setCheckpointState(null);
+	}, [content.courseId]);
 
 	const handleSelectSection = useCallback(
 		(chapterId: string, sectionId: string) => {
@@ -83,6 +98,8 @@ export function CourseMaterial({
 						chapters={content.chapters}
 						activeChapterId={activeChapterId}
 						activeSectionId={activeSectionId}
+						checkpointChapterId={checkpoint?.chapterId}
+						checkpointSectionId={checkpoint?.sectionId}
 						onSelectSection={handleSelectSection}
 					/>
 				</div>
@@ -119,6 +136,8 @@ export function CourseMaterial({
 						chapters={content.chapters}
 						activeChapterId={activeChapterId}
 						activeSectionId={activeSectionId}
+						checkpointChapterId={checkpoint?.chapterId}
+						checkpointSectionId={checkpoint?.sectionId}
 						onSelectSection={handleSelectSection}
 					/>
 				</div>
@@ -142,10 +161,28 @@ export function CourseMaterial({
 
 				{activeSection ? (
 					<div>
-						<div className="mb-2">
+						<div className="mb-2 flex items-center justify-between">
 							<p className="text-xs font-semibold tracking-wider text-[var(--kicker)] uppercase">
 								{activeChapter?.title}
 							</p>
+							{/* Checkpoint button */}
+							{checkpoint?.chapterId === activeChapterId && checkpoint?.sectionId === activeSectionId ? (
+								<button
+									onClick={handleClearCheckpoint}
+									className="flex items-center gap-1.5 rounded-full border border-[var(--lagoon)]/40 bg-[var(--lagoon)]/10 px-3 py-1 text-xs font-semibold text-[var(--lagoon-deep)] transition hover:bg-[var(--lagoon)]/20"
+									title="Clear checkpoint"
+								>
+									🔖 Checkpoint set — clear
+								</button>
+							) : (
+								<button
+									onClick={handleSetCheckpoint}
+									className="flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-white/50 px-3 py-1 text-xs font-medium text-[var(--sea-ink-soft)] transition hover:bg-white/80 hover:text-[var(--sea-ink)]"
+									title="Set checkpoint here"
+								>
+									🔖 Set checkpoint
+								</button>
+							)}
 						</div>
 						<h2 className="mb-6 text-xl font-bold text-[var(--sea-ink)] sm:text-2xl">
 							{activeSection.title}
