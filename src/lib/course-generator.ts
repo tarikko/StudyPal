@@ -27,6 +27,23 @@ interface CourseSkeleton {
   chapters: SkeletonChapter[]
 }
 
+// ─── Concurrency helper ───────────────────────────────────────────────────────
+
+async function withConcurrency<T>(tasks: (() => Promise<T>)[], limit: number): Promise<T[]> {
+  const results: T[] = new Array(tasks.length)
+  let nextIdx = 0
+  async function worker() {
+    while (nextIdx < tasks.length) {
+      const idx = nextIdx++
+      results[idx] = await tasks[idx]()
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker))
+  return results
+}
+
+const CONCURRENCY = 5
+
 // ─── Main pipeline ────────────────────────────────────────────────────────────
 
 export async function runGenerationPipeline(
@@ -35,21 +52,25 @@ export async function runGenerationPipeline(
   jobId: string,
 ): Promise<CourseContent> {
 
-  // ─── STEP 1: OCR / text extraction ───────────────────────────────────────
+  // ─── STEP 1: OCR / text extraction (parallel) ────────────────────────────
   updateJob(jobId, {
     status: 'ocr',
     progress: 5,
     message: `Extracting text from ${files.length} file(s)...`,
   })
 
-  const extracted: Array<{ text: string; source: string }> = []
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i]
-    updateJob(jobId, { message: `Processing "${file.name}" (${i + 1}/${files.length})...` })
-    const text = await extractTextFromFile(file)
-    extracted.push({ text, source: file.name })
-    updateJob(jobId, { progress: 5 + Math.round(10 * (i + 1) / files.length) })
-  }
+  let filesProcessed = 0
+  const extracted = await Promise.all(
+    files.map(async (file) => {
+      const text = await extractTextFromFile(file)
+      filesProcessed++
+      updateJob(jobId, {
+        progress: 5 + Math.round(10 * filesProcessed / files.length),
+        message: `Processed ${filesProcessed}/${files.length} file(s)...`,
+      })
+      return { text, source: file.name }
+    }),
+  )
 
   // ─── STEP 2: Chunk ────────────────────────────────────────────────────────
   const allChunks = extracted.flatMap(({ text, source }) => chunkText(text, source))
@@ -134,19 +155,23 @@ Rules:
     message: `Structure ready: ${skeleton.chapters.length} chapters · ${totalSections} sections · ${totalExercises} exercises. Writing content...`,
   })
 
-  // ─── STEP 6: Generate section content (RAG) ───────────────────────────────
+  // ─── STEP 6: Generate section content in parallel (RAG) ──────────────────
   updateJob(jobId, { status: 'content', progress: 50 })
 
-  const chapters: Chapter[] = []
+  // Flatten all (chapter, section) pairs and pre-compute their query strings
+  const flatSections = skeleton.chapters.flatMap((skCh) =>
+    skCh.sections.map((skSec) => ({ skCh, skSec })),
+  )
+
+  // Batch-embed all section queries in a single API call
+  const sectionQueryVecs = await embedTexts(
+    flatSections.map(({ skCh, skSec }) => `${skCh.title}: ${skSec.title}`),
+  )
+
   let sectionsDone = 0
-
-  for (const skCh of skeleton.chapters) {
-    const sections: Section[] = []
-
-    for (const skSec of skCh.sections) {
-      // Retrieve the most relevant chunks for this section
-      const [queryVec] = await embedTexts([`${skCh.title}: ${skSec.title}`])
-      const hits = await searchPoints(courseId, queryVec, 5)
+  const sectionResults = await withConcurrency(
+    flatSections.map(({ skCh, skSec }, idx) => async () => {
+      const hits = await searchPoints(courseId, sectionQueryVecs[idx], 5)
       const context = hits.map((h) => h.payload.text as string).join('\n\n---\n\n')
 
       const content = await chatText(
@@ -160,38 +185,72 @@ Requirements:
         `Relevant material:\n\n${context}\n\nWrite the section body for: "${skSec.title}"`,
       )
 
-      sections.push({ id: skSec.id, title: skSec.title, content })
       sectionsDone++
       updateJob(jobId, {
         progress: 50 + Math.round(30 * sectionsDone / totalSections),
         message: `Writing section content (${sectionsDone}/${totalSections})...`,
       })
-    }
 
-    chapters.push({ id: skCh.id, title: skCh.title, sections })
+      return { chapterId: skCh.id, sectionId: skSec.id, title: skSec.title, content }
+    }),
+    CONCURRENCY,
+  )
+
+  // Reconstruct chapter → sections structure in original order
+  const sectionsByChapter = new Map<string, Section[]>()
+  for (const skCh of skeleton.chapters) sectionsByChapter.set(skCh.id, [])
+  for (const { chapterId, sectionId, title, content } of sectionResults) {
+    sectionsByChapter.get(chapterId)!.push({ id: sectionId, title, content })
   }
 
-  // ─── STEP 7: Generate exercises (RAG) ─────────────────────────────────────
+  const chapters: Chapter[] = skeleton.chapters.map((skCh) => ({
+    id: skCh.id,
+    title: skCh.title,
+    sections: sectionsByChapter.get(skCh.id)!,
+  }))
+
+  // ─── STEP 7: Generate exercises in parallel (RAG) ─────────────────────────
   updateJob(jobId, {
     status: 'exercises',
     progress: 82,
     message: 'Generating exercises...',
   })
 
-  const exercises: Exercise[] = []
-  let exercisesDone = 0
+  // Batch-embed all chapter titles for retrieval in one call
+  const chapterQueryVecs = await embedTexts(skeleton.chapters.map((ch) => ch.title))
 
-  for (const skCh of skeleton.chapters) {
+  // Pre-fetch RAG context per chapter (parallel)
+  const chapterContexts = await Promise.all(
+    skeleton.chapters.map(async (_skCh, i) => {
+      const hits = await searchPoints(courseId, chapterQueryVecs[i], 8)
+      return hits.map((h) => h.payload.text as string).join('\n\n---\n\n').slice(0, 3000)
+    }),
+  )
+
+  // Flatten all exercises with their chapter context
+  interface ExerciseTask {
+    skCh: SkeletonChapter
+    outline: SkeletonExercise
+    context: string
+    firstSection: Section
+    globalIdx: number
+  }
+  let globalExIdx = 0
+  const exerciseTasks: ExerciseTask[] = skeleton.chapters.flatMap((skCh, chIdx) => {
     const chapter = chapters.find((c) => c.id === skCh.id)!
-    const firstSection = chapter.sections[0]
+    return skCh.exerciseOutlines.map((outline) => ({
+      skCh,
+      outline,
+      context: chapterContexts[chIdx],
+      firstSection: chapter.sections[0],
+      globalIdx: globalExIdx++,
+    }))
+  })
 
-    // Retrieve broad context for the whole chapter
-    const [chapterVec] = await embedTexts([skCh.title])
-    const hits = await searchPoints(courseId, chapterVec, 8)
-    const context = hits.map((h) => h.payload.text as string).join('\n\n---\n\n').slice(0, 3000)
-
-    for (const outline of skCh.exerciseOutlines) {
-      const exId = `ex-${courseId}-${skCh.id}-${exercisesDone}`
+  let exercisesDone = 0
+  const exercises = await withConcurrency(
+    exerciseTasks.map(({ skCh, outline, context, firstSection, globalIdx }) => async () => {
+      const exId = `ex-${courseId}-${skCh.id}-${globalIdx}`
 
       const raw = await chatJSON(
         `You are a university professor creating a student exercise.
@@ -214,7 +273,13 @@ Rules:
 
       const parsed = JSON.parse(raw) as { problem: string; steps: string[] }
 
-      exercises.push({
+      exercisesDone++
+      updateJob(jobId, {
+        progress: 82 + Math.round(15 * exercisesDone / totalExercises),
+        message: `Generating exercises (${exercisesDone}/${totalExercises})...`,
+      })
+
+      return {
         id: exId,
         courseId,
         chapterId: skCh.id,
@@ -230,15 +295,10 @@ Rules:
         problem: parsed.problem,
         steps: parsed.steps,
         solved: false,
-      })
-
-      exercisesDone++
-      updateJob(jobId, {
-        progress: 82 + Math.round(15 * exercisesDone / totalExercises),
-        message: `Generating exercises (${exercisesDone}/${totalExercises})...`,
-      })
-    }
-  }
+      } satisfies Exercise
+    }),
+    CONCURRENCY,
+  )
 
   updateJob(jobId, {
     status: 'done',
