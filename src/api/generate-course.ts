@@ -27,8 +27,7 @@ export const startGeneration = createServerFn({ method: "POST" })
 		const jobId = crypto.randomUUID();
 		const courseId = data.courseMeta.id;
 		const ownerUserId = await requireViewerUserId();
-
-		createOwnedJob(jobId, courseId, ownerUserId);
+		createOwnedJob(jobId, courseId, ownerUserId, data.courseMeta.name);
 
 		// Fire-and-forget: response returns immediately while pipeline runs
 		void runGenerationPipeline(data.files, courseId, jobId)

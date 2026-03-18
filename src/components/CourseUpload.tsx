@@ -6,6 +6,7 @@ import {
 	type StartGenerationInput,
 } from "#/api/generate-course";
 import { getGenerationStatus } from "#/api/generation-status";
+import { getAllGenerationJobs } from "#/api/get-all-jobs";
 import type { GenerationJob } from "#/lib/course-job-store";
 
 // ─── Course colours the user can pick ────────────────────────────────────────
@@ -133,6 +134,129 @@ function ProgressBar({
 			)}
 		</div>
 	);
+}
+
+// ─── Active jobs panel ────────────────────────────────────────────────────────
+
+const STATUS_LABEL: Record<GenerationJob['status'], string> = {
+  pending: '⏳ Queued',
+  ocr: '📄 Extracting text',
+  embedding: '🧠 Embedding',
+  skeleton: '🏗️ Building structure',
+  content: '✍️ Writing content',
+  exercises: '✏️ Creating exercises',
+  done: '✅ Complete',
+  error: '❌ Error',
+}
+
+function JobRow({ j }: { j: GenerationJob }) {
+  const isError = j.status === 'error'
+  const isDone = j.status === 'done'
+  const isActive = !isDone && !isError
+
+  return (
+    <li className="rounded-xl border border-[var(--line)] bg-white/60 px-4 py-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-[var(--sea-ink)]">
+            {j.courseName ?? j.courseId}
+          </p>
+          <p className="mt-0.5 text-xs text-[var(--sea-ink-soft)]">
+            {STATUS_LABEL[j.status]}
+            {isActive && ` — ${j.message}`}
+            {isError && j.error && ` — ${j.error}`}
+          </p>
+        </div>
+        <span
+          className={`flex-shrink-0 text-sm font-bold ${
+            isError
+              ? 'text-red-500'
+              : isDone
+              ? 'text-[var(--lagoon)]'
+              : 'text-[var(--lagoon-deep)]'
+          }`}
+        >
+          {j.progress}%
+        </span>
+        {isDone && (
+          <Link
+            to="/course/$courseId"
+            params={{ courseId: j.courseId }}
+            className="flex-shrink-0 rounded-full bg-gradient-to-r from-[var(--lagoon)] to-[var(--lagoon-deep)] px-3 py-1 text-xs font-semibold text-white no-underline"
+          >
+            View →
+          </Link>
+        )}
+      </div>
+
+      {/* Progress bar */}
+      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--line)]">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${
+            isError
+              ? 'bg-red-400'
+              : isDone
+              ? 'bg-[var(--lagoon)]'
+              : 'bg-gradient-to-r from-[var(--lagoon)] to-[var(--lagoon-deep)]'
+          }`}
+          style={{ width: `${j.progress}%` }}
+        />
+      </div>
+    </li>
+  )
+}
+
+const JOBS_POLL_MS = 5000
+
+function ActiveJobsPanel({ currentJobId }: { currentJobId?: string }) {
+  const [allJobs, setAllJobs] = useState<GenerationJob[]>([])
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const fetchJobs = useCallback(async () => {
+    try {
+      const jobs = await getAllGenerationJobs()
+      setAllJobs(jobs)
+    } catch {
+      // ignore transient errors
+    }
+  }, [])
+
+  useEffect(() => {
+    void fetchJobs()
+    pollRef.current = setInterval(() => { void fetchJobs() }, JOBS_POLL_MS)
+    return () => { if (pollRef.current) clearInterval(pollRef.current) }
+  }, [fetchJobs])
+
+  // Filter out the job that's already shown in the main progress bar
+  const otherJobs = allJobs.filter((j) => j.jobId !== currentJobId)
+
+  if (otherJobs.length === 0) return null
+
+  const active = otherJobs.filter((j) => j.status !== 'done' && j.status !== 'error')
+  const recent = otherJobs.filter((j) => j.status === 'done' || j.status === 'error')
+
+  return (
+    <div className="island-shell mt-6 rounded-2xl p-6">
+      <h2 className="mb-4 text-base font-bold text-[var(--sea-ink)]">
+        🗂️ Recent Jobs
+        {active.length > 0 && (
+          <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-[var(--lagoon)] to-[var(--lagoon-deep)] text-[10px] font-bold text-white">
+            {active.length}
+          </span>
+        )}
+      </h2>
+      <ul className="space-y-2">
+        {otherJobs.map((j) => (
+          <JobRow key={j.jobId} j={j} />
+        ))}
+      </ul>
+      {recent.length > 0 && active.length > 0 && (
+        <p className="mt-3 text-xs text-[var(--sea-ink-soft)]">
+          Showing {active.length} active · {recent.length} completed
+        </p>
+      )}
+    </div>
+  )
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -271,6 +395,7 @@ export function CourseUpload() {
 				status: "pending",
 				progress: 0,
 				message: "Request received, starting pipeline...",
+				createdAt: Date.now(),
 			});
 
 			startPolling(jobId);
@@ -542,6 +667,9 @@ export function CourseUpload() {
 					isRetrying={isSubmitting}
 				/>
 			)}
+
+			{/* All jobs panel */}
+			<ActiveJobsPanel currentJobId={job?.jobId} />
 		</div>
 	);
 }

@@ -3,6 +3,8 @@ import { kv } from "@vercel/kv";
 export interface GenerationJob {
 	jobId: string;
 	courseId: string;
+	courseName?: string;
+	createdAt: number;
 	ownerUserId?: string | null;
 	status:
 		| "pending"
@@ -28,10 +30,16 @@ const JOB_PREFIX = "job:";
 // In-process cache — instant reads within the same serverless invocation
 const jobs = new Map<string, GenerationJob>();
 
-export function createJob(jobId: string, courseId: string): GenerationJob {
+export function createJob(
+	jobId: string,
+	courseId: string,
+	courseName?: string
+): GenerationJob {
 	const job: GenerationJob = {
 		jobId,
 		courseId,
+		courseName,
+		createdAt: Date.now(),
 		ownerUserId: null,
 		status: "pending",
 		progress: 0,
@@ -48,11 +56,14 @@ export function createJob(jobId: string, courseId: string): GenerationJob {
 export function createOwnedJob(
 	jobId: string,
 	courseId: string,
-	ownerUserId: string | null
+	ownerUserId: string | null,
+	courseName?: string
 ): GenerationJob {
 	const job: GenerationJob = {
 		jobId,
 		courseId,
+		courseName,
+		createdAt: Date.now(),
 		ownerUserId,
 		status: "pending",
 		progress: 0,
@@ -109,4 +120,27 @@ export async function getJob(
 		// Non-fatal: return undefined if KV is unreachable
 	}
 	return undefined;
+}
+
+export function getAllJobs(): GenerationJob[] {
+	return Array.from(jobs.values()).sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export async function persistJobToKV(job: GenerationJob): Promise<void> {
+	await kv.set(`${JOB_PREFIX}${job.jobId}`, job, { ex: JOB_TTL });
+}
+
+export async function getAllJobsWithKV(): Promise<GenerationJob[]> {
+	const inMemory = getAllJobs();
+  try {
+		const keys = await kv.keys(`${JOB_PREFIX}*`);
+		if (!keys.length) return inMemory;
+    const kvJobs = (await Promise.all(keys.map((k) => kv.get<GenerationJob>(k))))
+			.filter((j): j is GenerationJob => j !== null);
+		const inMemoryIds = new Set(inMemory.map((j) => j.jobId));
+		const kvOnly = kvJobs.filter((j) => !inMemoryIds.has(j.jobId));
+		return [...inMemory, ...kvOnly].sort((a, b) => b.createdAt - a.createdAt);
+  } catch {
+		return inMemory;
+  }
 }
