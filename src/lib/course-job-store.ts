@@ -132,15 +132,18 @@ export async function persistJobToKV(job: GenerationJob): Promise<void> {
 
 export async function getAllJobsWithKV(): Promise<GenerationJob[]> {
 	const inMemory = getAllJobs();
-  try {
+	try {
 		const keys = await kv.keys(`${JOB_PREFIX}*`);
 		if (!keys.length) return inMemory;
-    const kvJobs = (await Promise.all(keys.map((k) => kv.get<GenerationJob>(k))))
-			.filter((j): j is GenerationJob => j !== null);
+		const kvJobs = (
+			await Promise.all(keys.map((k) => kv.get<GenerationJob>(k)))
+		).filter((j): j is GenerationJob => j !== null);
 		const inMemoryIds = new Set(inMemory.map((j) => j.jobId));
 		const kvOnly = kvJobs.filter((j) => !inMemoryIds.has(j.jobId));
-		return [...inMemory, ...kvOnly].sort((a, b) => b.createdAt - a.createdAt);
-  } catch {
+		return [...inMemory, ...kvOnly].sort(
+			(a, b) => b.createdAt - a.createdAt
+		);
+	} catch {
 		return inMemory;
-  }
+	}
 }
