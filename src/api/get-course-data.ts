@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { courseContents } from "#/data/courses";
 import { getGeneratedCourse } from "#/lib/generated-course-store";
+import { getViewerUserId } from "#/lib/auth-server";
 import type { CourseContent } from "#/data/courses";
 
 export const getCourseData = createServerFn({ method: "POST" })
@@ -9,6 +10,7 @@ export const getCourseData = createServerFn({ method: "POST" })
 		// Check hardcoded first
 		if (courseContents[courseId]) return courseContents[courseId];
 		// Fall back to generated
-		const bundle = await getGeneratedCourse(courseId);
+		const viewerUserId = await getViewerUserId();
+		const bundle = await getGeneratedCourse(courseId, viewerUserId);
 		return bundle?.content ?? null;
 	});

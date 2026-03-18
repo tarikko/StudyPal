@@ -1,9 +1,18 @@
+import { reviewImageFile, reviewPdfFile } from "#/lib/pdf-reviewer";
+
 const MISTRAL_BASE = 'https://api.mistral.ai/v1'
+const OPEN_SOURCE_OCR_BASE = process.env.OPEN_SOURCE_OCR_BASE_URL?.replace(/\/$/, "")
+const OPEN_SOURCE_OCR_MODEL = process.env.OPEN_SOURCE_OCR_MODEL
+const OPEN_SOURCE_OCR_API_KEY = process.env.OPEN_SOURCE_OCR_API_KEY
 
 function getKey(): string {
   const key = process.env.MISTRAL_API_KEY
   if (!key) throw new Error('MISTRAL_API_KEY is not set')
   return key
+}
+
+function hasOpenSourceOcrConfigured(): boolean {
+	return Boolean(OPEN_SOURCE_OCR_BASE && OPEN_SOURCE_OCR_MODEL)
 }
 
 // ─── File & OCR ───────────────────────────────────────────────────────────────
@@ -76,6 +85,94 @@ async function ocrImage(base64: string, mimeType: string): Promise<string> {
   return data.pages.map((p) => p.markdown).join('\n\n')
 }
 
+async function ocrImageWithOpenSource(base64: string, mimeType: string): Promise<string> {
+  if (!OPEN_SOURCE_OCR_BASE || !OPEN_SOURCE_OCR_MODEL) {
+    return ocrImage(base64, mimeType)
+  }
+
+  const resp = await fetch(`${OPEN_SOURCE_OCR_BASE}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(OPEN_SOURCE_OCR_API_KEY
+        ? { Authorization: `Bearer ${OPEN_SOURCE_OCR_API_KEY}` }
+        : {}),
+    },
+    body: JSON.stringify({
+      model: OPEN_SOURCE_OCR_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: 'Extract the visible printed text in natural reading order. Return markdown only. Ignore handwritten marks and complex formulas when they are unclear.',
+            },
+            {
+              type: 'image_url',
+              image_url: { url: `data:${mimeType};base64,${base64}` },
+            },
+          ],
+        },
+      ],
+      max_tokens: 2048,
+    }),
+  })
+
+  if (!resp.ok) throw new Error(`Open-source OCR failed: ${await resp.text()}`)
+  const data = (await resp.json()) as {
+    choices: Array<{ message: { content: string | Array<{ text?: string }> } }>
+  }
+  const content = data.choices[0]?.message?.content
+  if (typeof content === 'string') return content
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => (typeof part.text === 'string' ? part.text : ''))
+      .join('')
+  }
+  throw new Error('Open-source OCR returned no content')
+}
+
+async function extractTextFromPdf(file: InputFile): Promise<string> {
+  const reviewedPages = await reviewPdfFile(file)
+  const pageTexts: string[] = []
+
+  for (const page of reviewedPages) {
+    if (page.route.provider === 'text-layer' && page.textLayerText) {
+      pageTexts.push(page.textLayerText)
+      continue
+    }
+
+    if (!page.renderedImageBase64 || !page.renderedImageMimeType) {
+      throw new Error(`Page ${page.pageNumber} could not be rendered for OCR`)
+    }
+
+    const prefersOpenSource =
+      page.route.provider === 'open-source' && hasOpenSourceOcrConfigured()
+    const pageText = prefersOpenSource
+      ? await ocrImageWithOpenSource(
+          page.renderedImageBase64,
+          page.renderedImageMimeType
+        )
+      : await ocrImage(page.renderedImageBase64, page.renderedImageMimeType)
+
+    pageTexts.push(pageText)
+  }
+
+  return pageTexts.join('\n\n')
+}
+
+async function extractTextFromImage(file: InputFile): Promise<string> {
+  const reviewedImage = await reviewImageFile(file)
+  if (
+    reviewedImage.route.provider === 'open-source' &&
+    hasOpenSourceOcrConfigured()
+  ) {
+    return ocrImageWithOpenSource(file.base64, file.mimeType)
+  }
+  return ocrImage(file.base64, file.mimeType)
+}
+
 // ─── Public file extraction ───────────────────────────────────────────────────
 
 export interface InputFile {
@@ -100,10 +197,15 @@ export async function extractTextFromFile(file: InputFile): Promise<string> {
 
   // Images — OCR directly with base64 (avoid upload round-trip)
   if (mimeType.startsWith('image/')) {
-    return ocrImage(base64, mimeType)
+    return extractTextFromImage(file)
   }
 
-  // PDFs — upload then OCR via signed URL
+  // PDFs — review page-by-page and route text, scanned text, and math separately
+  if (mimeType === 'application/pdf' || name.endsWith('.pdf')) {
+		return extractTextFromPdf(file)
+	}
+
+  // Other document types — preserve the original document-level OCR path
   const fileId = await uploadFile(base64, name, mimeType)
   const url = await getFileUrl(fileId)
   return ocrDocument(url)

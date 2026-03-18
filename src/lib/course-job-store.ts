@@ -1,33 +1,112 @@
+import { kv } from "@vercel/kv";
+
 export interface GenerationJob {
-  jobId: string
-  courseId: string
-  status: 'pending' | 'ocr' | 'embedding' | 'skeleton' | 'content' | 'exercises' | 'done' | 'error'
-  progress: number // 0–100
-  message: string
-  error?: string
+	jobId: string;
+	courseId: string;
+	ownerUserId?: string | null;
+	status:
+		| "pending"
+		| "ocr"
+		| "embedding"
+		| "skeleton"
+		| "content"
+		| "exercises"
+		| "done"
+		| "error";
+	progress: number; // 0–100
+	message: string;
+	error?: string;
+	/** Last pipeline step (1–7) that completed successfully. Used to resume after a failure. */
+	lastSuccessfulStep?: number;
+	/** True when the job errored but has a valid checkpoint to resume from. */
+	canRetry?: boolean;
 }
 
-const jobs = new Map<string, GenerationJob>()
+const JOB_TTL = 86400; // 24 hours
+const JOB_PREFIX = "job:";
+
+// In-process cache — instant reads within the same serverless invocation
+const jobs = new Map<string, GenerationJob>();
 
 export function createJob(jobId: string, courseId: string): GenerationJob {
-  const job: GenerationJob = {
-    jobId,
-    courseId,
-    status: 'pending',
-    progress: 0,
-    message: 'Starting...',
-  }
-  jobs.set(jobId, job)
-  return job
+	const job: GenerationJob = {
+		jobId,
+		courseId,
+		ownerUserId: null,
+		status: "pending",
+		progress: 0,
+		message: "Starting...",
+	};
+	jobs.set(jobId, job);
+	// Persist to KV so polling requests on other instances can read it
+	void kv.set(`${JOB_PREFIX}${jobId}`, job, { ex: JOB_TTL }).catch(() => {
+		/* non-fatal */
+	});
+	return job;
+}
+
+export function createOwnedJob(
+	jobId: string,
+	courseId: string,
+	ownerUserId: string | null
+): GenerationJob {
+	const job: GenerationJob = {
+		jobId,
+		courseId,
+		ownerUserId,
+		status: "pending",
+		progress: 0,
+		message: "Starting...",
+	};
+	jobs.set(jobId, job);
+	void kv.set(`${JOB_PREFIX}${jobId}`, job, { ex: JOB_TTL }).catch(() => {
+		/* non-fatal */
+	});
+	return job;
 }
 
 export function updateJob(jobId: string, updates: Partial<GenerationJob>) {
-  const job = jobs.get(jobId)
-  if (job) {
-    jobs.set(jobId, { ...job, ...updates })
-  }
+	const job = jobs.get(jobId);
+	if (!job) return;
+	const updated = { ...job, ...updates };
+	jobs.set(jobId, updated);
+	// Fire-and-forget KV write — keeps cross-instance polling accurate
+	void kv.set(`${JOB_PREFIX}${jobId}`, updated, { ex: JOB_TTL }).catch(() => {
+		/* non-fatal */
+	});
 }
 
-export function getJob(jobId: string): GenerationJob | undefined {
-  return jobs.get(jobId)
+export async function getJob(
+	jobId: string,
+	viewerUserId?: string | null
+): Promise<GenerationJob | undefined> {
+	// Fast path: same process already has it
+	const cached = jobs.get(jobId);
+	if (cached) {
+		if (
+			cached.ownerUserId &&
+			cached.ownerUserId !== (viewerUserId ?? null)
+		) {
+			return undefined;
+		}
+		return cached;
+	}
+
+	// Fallback: another serverless instance wrote it to KV
+	try {
+		const remote = await kv.get<GenerationJob>(`${JOB_PREFIX}${jobId}`);
+		if (remote) {
+			if (
+				remote.ownerUserId &&
+				remote.ownerUserId !== (viewerUserId ?? null)
+			) {
+				return undefined;
+			}
+			jobs.set(jobId, remote); // warm the local cache
+			return remote;
+		}
+	} catch {
+		// Non-fatal: return undefined if KV is unreachable
+	}
+	return undefined;
 }

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UploadRouteImport } from './routes/upload'
 import { Route as TimetableRouteImport } from './routes/timetable'
+import { Route as MyCoursesRouteImport } from './routes/my-courses'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CourseCourseIdRouteImport } from './routes/course.$courseId'
 import { Route as ApiVerifySolutionRouteImport } from './routes/api/verify-solution'
@@ -23,6 +24,11 @@ const UploadRoute = UploadRouteImport.update({
 const TimetableRoute = TimetableRouteImport.update({
   id: '/timetable',
   path: '/timetable',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyCoursesRoute = MyCoursesRouteImport.update({
+  id: '/my-courses',
+  path: '/my-courses',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,6 +49,7 @@ const ApiVerifySolutionRoute = ApiVerifySolutionRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/my-courses': typeof MyCoursesRoute
   '/timetable': typeof TimetableRoute
   '/upload': typeof UploadRoute
   '/api/verify-solution': typeof ApiVerifySolutionRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/my-courses': typeof MyCoursesRoute
   '/timetable': typeof TimetableRoute
   '/upload': typeof UploadRoute
   '/api/verify-solution': typeof ApiVerifySolutionRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/my-courses': typeof MyCoursesRoute
   '/timetable': typeof TimetableRoute
   '/upload': typeof UploadRoute
   '/api/verify-solution': typeof ApiVerifySolutionRoute
@@ -67,6 +76,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/my-courses'
     | '/timetable'
     | '/upload'
     | '/api/verify-solution'
@@ -74,6 +84,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/my-courses'
     | '/timetable'
     | '/upload'
     | '/api/verify-solution'
@@ -81,6 +92,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/my-courses'
     | '/timetable'
     | '/upload'
     | '/api/verify-solution'
@@ -89,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MyCoursesRoute: typeof MyCoursesRoute
   TimetableRoute: typeof TimetableRoute
   UploadRoute: typeof UploadRoute
   ApiVerifySolutionRoute: typeof ApiVerifySolutionRoute
@@ -109,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/timetable'
       fullPath: '/timetable'
       preLoaderRoute: typeof TimetableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-courses': {
+      id: '/my-courses'
+      path: '/my-courses'
+      fullPath: '/my-courses'
+      preLoaderRoute: typeof MyCoursesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -137,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MyCoursesRoute: MyCoursesRoute,
   TimetableRoute: TimetableRoute,
   UploadRoute: UploadRoute,
   ApiVerifySolutionRoute: ApiVerifySolutionRoute,
@@ -147,10 +168,11 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

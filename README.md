@@ -120,6 +120,28 @@ MISTRAL_API_KEY=your_mistral_api_key
 
 No key? You can still use the full platform — AI verification is an opt-in overlay on each exercise.
 
+### Smart OCR routing for uploads
+
+The upload pipeline now reviews PDFs page by page before OCR:
+
+- Digital text pages bypass OCR entirely.
+- Clean printed scans can be routed to a cheaper OpenAI-compatible open-source OCR backend.
+- Formula-heavy, handwritten, blurry, or otherwise ambiguous pages stay on Mistral OCR.
+
+Recommended open-source backends for the cheap path:
+
+- `PaddleOCR-VL-0.9B`: best fit for clean printed document pages, multilingual text, and general page parsing.
+- `Surya` or `Chandra`: good open-source fallback when you want strong layout handling and better robustness on noisy scans.
+
+To enable the cheaper OCR lane, point StudyPal at any OpenAI-compatible server that exposes your chosen model:
+
+```env
+MISTRAL_API_KEY=your_mistral_api_key
+OPEN_SOURCE_OCR_BASE_URL=http://localhost:8000/v1
+OPEN_SOURCE_OCR_MODEL=PaddleOCR-VL-0.9B
+OPEN_SOURCE_OCR_API_KEY=
+```
+
 ---
 
 ## 📦 Build for Production

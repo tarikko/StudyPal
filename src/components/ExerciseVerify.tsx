@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { detectImageMimeType } from "@tanstack/ai";
 import { useChat, fetchServerSentEvents } from "@tanstack/ai-react";
 import { Streamdown } from "streamdown";
 import { remarkPlugins, rehypePlugins } from "#/lib/markdown-config";
@@ -14,6 +15,7 @@ export function ExerciseVerify({ exercise, onClose }: ExerciseVerifyProps) {
 	const [solution, setSolution] = useState("");
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
 	const [imageBase64, setImageBase64] = useState<string | null>(null);
+	const [imageMimeType, setImageMimeType] = useState<string | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const { messages, sendMessage, isLoading, status } = useChat({
@@ -33,23 +35,22 @@ export function ExerciseVerify({ exercise, onClose }: ExerciseVerifyProps) {
 		reader.onload = () => {
 			const result = reader.result as string;
 			setImagePreview(result);
-			// Extract base64 data
 			const base64 = result.split(",")[1];
-			setImageBase64(base64);
+			const normalizedBase64 = base64 ?? "";
+			setImageBase64(normalizedBase64);
+			setImageMimeType(
+				file.type ||
+					detectImageMimeType(normalizedBase64) ||
+					"image/jpeg"
+			);
 		};
 		reader.readAsDataURL(file);
 	};
 
 	const handleSubmit = async () => {
-		console.log("mode-------");
 		if (mode === "text" && solution.trim()) {
 			await sendMessage(`My solution:\n\n${solution}`);
 		} else if (mode === "image" && imageBase64 && imagePreview) {
-			// Extract MIME type from data URL (format: data:image/jpeg;base64,...)
-			const dataUrlPrefix = imagePreview.split(";")[0];
-			const mimeType = dataUrlPrefix?.includes(":")
-				? dataUrlPrefix.split(":")[1]
-				: "image/jpeg";
 			await sendMessage({
 				content: [
 					{
@@ -59,7 +60,11 @@ export function ExerciseVerify({ exercise, onClose }: ExerciseVerifyProps) {
 					},
 					{
 						type: "image",
-						image: imageBase64,
+						source: {
+							type: "data",
+							value: imageBase64,
+							mimeType: imageMimeType || "image/jpeg",
+						},
 					},
 				],
 			});
@@ -158,7 +163,8 @@ export function ExerciseVerify({ exercise, onClose }: ExerciseVerifyProps) {
 								ref={fileInputRef}
 								type="file"
 								accept="image/*"
-								capture="environment"
+								aria-label="Upload a photo of your handwritten solution"
+								title="Upload a photo of your handwritten solution"
 								onChange={handleImageUpload}
 								className="hidden"
 							/>

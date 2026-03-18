@@ -92,7 +92,9 @@ const toMistralMessages = (
 					type?: unknown;
 					text?: unknown;
 					image?: unknown;
+					source?: unknown;
 					mimeType?: unknown;
+					content?: unknown;
 				};
 
 				if (
@@ -111,16 +113,48 @@ const toMistralMessages = (
 
 				if (
 					candidate.type === "image" &&
-					typeof candidate.image === "string"
+					(typeof candidate.image === "string" ||
+						typeof candidate.source === "object")
 				) {
+					const source = candidate.source as
+						| {
+								type?: unknown;
+								value?: unknown;
+								mimeType?: unknown;
+						  }
+						| undefined;
+
+					if (
+						source?.type === "url" &&
+						typeof source.value === "string"
+					) {
+						contentParts.push({
+							type: "image_url",
+							image_url: { url: source.value },
+						});
+						continue;
+					}
+
+					const base64Value =
+						typeof source?.value === "string"
+							? source.value
+							: typeof candidate.image === "string"
+								? candidate.image
+								: null;
+
+					if (!base64Value) continue;
+
 					const mimeType =
-						typeof candidate.mimeType === "string"
-							? candidate.mimeType
-							: "image/jpeg";
+						typeof source?.mimeType === "string"
+							? source.mimeType
+							: typeof candidate.mimeType === "string"
+								? candidate.mimeType
+								: "image/jpeg";
+
 					contentParts.push({
 						type: "image_url",
 						image_url: {
-							url: `data:${mimeType};base64,${candidate.image}`,
+							url: `data:${mimeType};base64,${base64Value}`,
 						},
 					});
 				}

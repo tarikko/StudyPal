@@ -4,9 +4,12 @@ import type { Exercise, CourseContent } from "#/data/courses";
 import { ExerciseVerify } from "./ExerciseVerify";
 import { Streamdown } from "streamdown";
 import { rehypePlugins, remarkPlugins } from "#/lib/markdown-config";
+import { generateMoreExercisesAction } from "#/api/generate-more-exercises";
 
 interface ExerciseSectionProps {
 	content: CourseContent;
+	/** Show the "Generate More" button only for AI-generated courses. */
+	isGenerated?: boolean;
 }
 
 function DifficultyBadge({
@@ -169,18 +172,52 @@ function ExerciseCard({
 	);
 }
 
-export function ExerciseSection({ content }: ExerciseSectionProps) {
+export function ExerciseSection({
+	content,
+	isGenerated = false,
+}: ExerciseSectionProps) {
 	const [filterChapter, setFilterChapter] = useState<string>("all");
+	// Exercises appended locally after "Generate More" calls
+	const [extraExercises, setExtraExercises] = useState<Exercise[]>([]);
+	const [generating, setGenerating] = useState(false);
+	const [genError, setGenError] = useState<string | null>(null);
+
+	const allExercises = [...content.exercises, ...extraExercises];
 
 	const filtered =
 		filterChapter === "all"
-			? content.exercises
-			: content.exercises.filter((e) => e.chapterId === filterChapter);
+			? allExercises
+			: allExercises.filter((e) => e.chapterId === filterChapter);
+
+	async function handleGenerateMore(targetChapterId?: string) {
+		setGenerating(true);
+		setGenError(null);
+		try {
+			const newOnes = await generateMoreExercisesAction({
+				data: {
+					courseId: content.courseId,
+					chapters: content.chapters,
+					existingExercises: allExercises,
+					targetChapterId,
+					count: 5,
+				},
+			});
+			setExtraExercises((prev) => [...prev, ...newOnes]);
+		} catch (err) {
+			setGenError(
+				err instanceof Error
+					? err.message
+					: "Generation failed. Try again."
+			);
+		} finally {
+			setGenerating(false);
+		}
+	}
 
 	return (
 		<div>
 			{/* Filter by chapter */}
-			<div className="mb-6 flex items-center gap-3">
+			<div className="mb-6 flex flex-wrap items-center gap-3">
 				<p className="text-sm font-semibold text-[var(--sea-ink-soft)]">
 					Filter:
 				</p>
@@ -193,10 +230,10 @@ export function ExerciseSection({ content }: ExerciseSectionProps) {
 								: "border border-[var(--line)] bg-white/50 text-[var(--sea-ink-soft)] hover:bg-white/80"
 						}`}
 					>
-						All ({content.exercises.length})
+						All ({allExercises.length})
 					</button>
 					{content.chapters.map((ch) => {
-						const count = content.exercises.filter(
+						const count = allExercises.filter(
 							(e) => e.chapterId === ch.id
 						).length;
 						if (count === 0) return null;
@@ -215,6 +252,17 @@ export function ExerciseSection({ content }: ExerciseSectionProps) {
 						);
 					})}
 				</div>
+
+				{/* Per-chapter generate button (visible when a chapter is selected) */}
+				{isGenerated && filterChapter !== "all" && (
+					<button
+						onClick={() => handleGenerateMore(filterChapter)}
+						disabled={generating}
+						className="ml-auto rounded-full border border-[var(--lagoon)]/40 bg-[var(--lagoon)]/10 px-3 py-1 text-xs font-semibold text-[var(--lagoon-deep)] transition-colors hover:bg-[var(--lagoon)]/20 disabled:opacity-50"
+					>
+						{generating ? "Generating…" : "+ More for this chapter"}
+					</button>
+				)}
 			</div>
 
 			{/* Exercise list */}
@@ -232,6 +280,43 @@ export function ExerciseSection({ content }: ExerciseSectionProps) {
 				<p className="py-12 text-center text-sm text-[var(--sea-ink-soft)]">
 					No exercises for this chapter yet.
 				</p>
+			)}
+
+			{/* Global "Generate More" button */}
+			{isGenerated && (
+				<div className="mt-8 flex flex-col items-center gap-3">
+					{genError && (
+						<p className="text-sm text-red-600">{genError}</p>
+					)}
+					<button
+						onClick={() =>
+							handleGenerateMore(
+								filterChapter !== "all"
+									? filterChapter
+									: undefined
+							)
+						}
+						disabled={generating}
+						className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--lagoon)] to-[var(--lagoon-deep)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+					>
+						{generating ? (
+							<>
+								<span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+								Generating exercises…
+							</>
+						) : (
+							<>
+								✨ Generate More Exercises
+								{filterChapter !== "all"
+									? " for this Chapter"
+									: ""}
+							</>
+						)}
+					</button>
+					<p className="text-xs text-[var(--sea-ink-soft)]">
+						Generates 5 new exercises with varied problem types
+					</p>
+				</div>
 			)}
 		</div>
 	);
