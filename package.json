@@ -14,7 +14,6 @@
   "dependencies": {
     "@clerk/tanstack-react-start": "^1.0.1",
     "@faker-js/faker": "^10.0.0",
-    "@napi-rs/canvas": "^0.1.96",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/ai": "latest",
     "@tanstack/ai-anthropic": "latest",
